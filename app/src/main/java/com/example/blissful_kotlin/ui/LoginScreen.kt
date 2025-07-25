@@ -88,6 +88,15 @@ fun LoginScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Please enter both email and password.", color = MaterialTheme.colors.error)
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { /* TODO: Navigate to Sign Up */ },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Sign Up", color = White)
+                }
             }
         }
     }

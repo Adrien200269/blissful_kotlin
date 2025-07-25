@@ -22,7 +22,7 @@ import com.blissfulcakes.ui.theme.White
 import com.blissfulcakes.ui.theme.TextPrimary
 
 @Composable
-fun LandingPageScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit) {
+fun LandingPageScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit, onItemsClick: () -> Unit, onAboutClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,40 +48,47 @@ fun LandingPageScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit) {
             // Welcome message
             Text(
                 text = "Welcome to Blissful Cakes!",
-                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = PinkAccent
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Delicious cakes and cupcakes delivered fresh to your door.",
-                fontSize = 16.sp,
+                fontSize = 24.sp,
                 color = TextPrimary,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
-            // Navigation buttons
+            // Login Button
             Button(
                 onClick = onLoginClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent)
+                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             ) {
-                Text("Login", color = TextPrimary)
+                Text("Login", color = White, fontSize = 18.sp)
             }
-            Spacer(modifier = Modifier.height(12.dp))
+            // Sign Up Button
             Button(
                 onClick = onSignUpClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent)
+                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
             ) {
-                Text("Sign Up", color = TextPrimary)
+                Text("Sign Up", color = White, fontSize = 18.sp)
+            }
+            // Items Button
+            Button(
+                onClick = { onItemsClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+            ) {
+                Text("View Items", color = White, fontSize = 18.sp)
+            }
+            // About Us Button
+            Button(
+                onClick = { onAboutClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = PinkAccent),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("About Us", color = White, fontSize = 18.sp)
             }
         }
     }
 }
-

@@ -1,0 +1,313 @@
+package com.example.blissfulcakes.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.blissfulcakes.data.model.CartItem
+import com.example.blissfulcakes.di.DependencyProvider
+import com.example.blissfulcakes.ui.viewmodel.AuthViewModel
+import com.example.blissfulcakes.ui.viewmodel.CartViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CartScreen(
+    navController: NavController
+) {
+    val context = LocalContext.current
+    val cartViewModel = remember { DependencyProvider.provideCartViewModel(context) }
+    val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
+    
+    val cartItems by cartViewModel.cartItems.collectAsState()
+    val totalAmount by cartViewModel.totalAmount.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    
+    LaunchedEffect(currentUser) {
+        currentUser?.let { user ->
+            cartViewModel.loadCartItems(user.id)
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Shopping Cart",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFE91E63)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFFE91E63)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFFFE5E5),
+                            Color(0xFFFFF0F0)
+                        )
+                    )
+                )
+        ) {
+            if (cartItems.isEmpty()) {
+                // Empty Cart
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp),
+                        tint = Color.Gray
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text(
+                        text = "Your cart is empty",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = "Add some delicious cakes to your cart",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Button(
+                        onClick = { navController.navigate("home") },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                    ) {
+                        Text("Start Shopping")
+                    }
+                }
+            } else {
+                // Cart Items
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(cartItems) { cartItemWithCake ->
+                            CartItemCard(
+                                cartItemWithCake = cartItemWithCake,
+                                onUpdateQuantity = { quantity ->
+                                    cartViewModel.updateQuantity(
+                                        cartItemWithCake.cartItem.copy(quantity = quantity)
+                                    )
+                                },
+                                onRemove = {
+                                    cartViewModel.removeFromCart(cartItemWithCake.cartItem)
+                                }
+                            )
+                        }
+                        
+                        item {
+                            Spacer(modifier = Modifier.height(100.dp))
+                        }
+                    }
+                    
+                    // Checkout Section
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Total:",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "NPR $totalAmount",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFFE91E63)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Button(
+                                onClick = { navController.navigate("checkout") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                            ) {
+                                Text(
+                                    "Proceed to Checkout",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CartItemCard(
+    cartItemWithCake: com.example.blissfulcakes.data.repository.CartItemWithCake,
+    onUpdateQuantity: (Int) -> Unit,
+    onRemove: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Cake Image
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Default.Cake,
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp),
+                    tint = Color(0xFFE91E63)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            // Cake Details
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = cartItemWithCake.cake.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Text(
+                    text = "NPR ${cartItemWithCake.cake.price}",
+                    fontSize = 14.sp,
+                    color = Color(0xFFE91E63),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            
+            // Quantity Controls
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        if (cartItemWithCake.cartItem.quantity > 1) {
+                            onUpdateQuantity(cartItemWithCake.cartItem.quantity - 1)
+                        }
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Remove,
+                        contentDescription = "Decrease",
+                        tint = Color(0xFFE91E63)
+                    )
+                }
+                
+                Text(
+                    text = cartItemWithCake.cartItem.quantity.toString(),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                
+                IconButton(
+                    onClick = {
+                        onUpdateQuantity(cartItemWithCake.cartItem.quantity + 1)
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Increase",
+                        tint = Color(0xFFE91E63)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            // Remove Button
+            IconButton(onClick = onRemove) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Remove",
+                    tint = Color.Red
+                )
+            }
+        }
+    }
+} 

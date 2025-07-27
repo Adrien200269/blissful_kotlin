@@ -1,0 +1,293 @@
+package com.example.blissfulcakes.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.blissfulcakes.data.model.Order
+import com.example.blissfulcakes.data.model.OrderStatus
+import com.example.blissfulcakes.di.DependencyProvider
+import com.example.blissfulcakes.ui.viewmodel.AuthViewModel
+import com.example.blissfulcakes.ui.viewmodel.OrderViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OrdersScreen(
+    navController: NavController
+) {
+    val context = LocalContext.current
+    val orderViewModel = remember { DependencyProvider.provideOrderViewModel(context) }
+    val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
+    
+    val orders by orderViewModel.orders.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
+    
+    LaunchedEffect(currentUser) {
+        currentUser?.let { user ->
+            orderViewModel.loadOrders(user.id)
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "My Orders",
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFE91E63)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFFE91E63)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFFFFE5E5),
+                            Color(0xFFFFF0F0)
+                        )
+                    )
+                )
+        ) {
+            if (orders.isEmpty()) {
+                // Empty Orders
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        Icons.Default.List,
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp),
+                        tint = Color.Gray
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text(
+                        text = "No orders yet",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = "Start shopping to see your orders here",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Button(
+                        onClick = { navController.navigate("home") },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                    ) {
+                        Text("Start Shopping")
+                    }
+                }
+            } else {
+                // Orders List
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    
+                    items(orders) { order ->
+                        OrderCard(order = order)
+                    }
+                    
+                    item {
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OrderCard(order: Order) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Order #${order.id}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                StatusChip(status = order.status)
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Order Details
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Customer:",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = order.customerName,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "Total:",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = "NPR ${order.totalAmount}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFE91E63)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Address
+            Text(
+                text = "Address:",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = order.customerAddress,
+                fontSize = 14.sp,
+                maxLines = 2
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Phone
+            Text(
+                text = "Phone:",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = order.customerPhone,
+                fontSize = 14.sp
+            )
+            
+            if (order.customerNotes.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = "Notes:",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = order.customerNotes,
+                    fontSize = 14.sp,
+                    maxLines = 2
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Date
+            val dateFormat = SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault())
+            Text(
+                text = "Ordered: ${dateFormat.format(order.orderDate)}",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+fun StatusChip(status: OrderStatus) {
+    val (backgroundColor, textColor, text) = when (status) {
+        OrderStatus.PENDING -> Triple(Color(0xFFFFA000), Color.White, "Pending")
+        OrderStatus.CONFIRMED -> Triple(Color(0xFF1976D2), Color.White, "Confirmed")
+        OrderStatus.PREPARING -> Triple(Color(0xFF7B1FA2), Color.White, "Preparing")
+        OrderStatus.READY -> Triple(Color(0xFF388E3C), Color.White, "Ready")
+        OrderStatus.DELIVERED -> Triple(Color(0xFF2E7D32), Color.White, "Delivered")
+        OrderStatus.CANCELLED -> Triple(Color(0xFFD32F2F), Color.White, "Cancelled")
+    }
+    
+    Surface(
+        color = backgroundColor,
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+    }
+} 

@@ -1,0 +1,87 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Circular background -->
+    <path
+        android:pathData="M100,100m-95,0a95,95 0,1 1,190 0a95,95 0,1 1,-190 0"
+        android:fillColor="#F5E6E0"/>
+    
+    <!-- Decorative roses top left -->
+    <group android:translateX="40" android:translateY="35">
+        <path
+            android:pathData="M0,0m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+            android:fillColor="#D4698B"/>
+        <path
+            android:pathData="M0,0m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+            android:fillColor="#E91E63"/>
+        <path
+            android:pathData="M15,5m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"
+            android:fillColor="#D4698B"/>
+        <path
+            android:pathData="M15,5m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+            android:fillColor="#E91E63"/>
+    </group>
+    
+    <!-- Decorative leaves -->
+    <group android:translateX="60" android:translateY="30">
+        <path
+            android:pathData="M0,0 L8,3 L12,10 L8,15 L0,12 Z"
+            android:fillColor="#4CAF50"/>
+        <path
+            android:pathData="M10,8 L18,11 L22,18 L18,23 L10,20 Z"
+            android:fillColor="#4CAF50"/>
+    </group>
+    
+    <!-- Stylized "B" for Blissful -->
+    <path
+        android:pathData="M75,85 L85,85 Q95,85 95,95 Q95,100 90,100 Q95,100 95,110 Q95,120 85,120 L75,120 L75,85 M80,90 L80,97 L87,97 Q90,97 90,93.5 Q90,90 87,90 L80,90 M80,103 L80,115 L87,115 Q90,115 90,109 Q90,103 87,103 L80,103"
+        android:fillColor="#E91E63"/>
+    
+    <!-- Simple "C" for Cakes -->
+    <path
+        android:pathData="M110,125 Q100,125 100,135 Q100,145 110,145 L115,145"
+        android:stroke="#4CAF50"
+        android:strokeWidth="3"
+        android:fillColor="transparent"/>
+    
+    <!-- Additional decorative swirl -->
+    <path
+        android:pathData="M100,140 Q105,143 110,140 Q115,137 120,140"
+        android:stroke="#4CAF50"
+        android:strokeWidth="2"
+        android:fillColor="transparent"/>
+    
+    <!-- Decorative roses bottom right -->
+    <group android:translateX="140" android:translateY="145">
+        <path
+            android:pathData="M0,0m-7,0a7,7 0,1 1,14 0a7,7 0,1 1,-14 0"
+            android:fillColor="#D4698B"/>
+        <path
+            android:pathData="M0,0m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"
+            android:fillColor="#E91E63"/>
+        <path
+            android:pathData="M12,8m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+            android:fillColor="#D4698B"/>
+    </group>
+    
+    <!-- Decorative curved line -->
+    <path
+        android:pathData="M75,55 Q100,45 125,55"
+        android:stroke="#4CAF50"
+        android:strokeWidth="2"
+        android:fillColor="transparent"/>
+    
+    <!-- Bottom decorative elements -->
+    <group android:translateX="110" android:translateY="155">
+        <path
+            android:pathData="M0,0 L6,2 L10,8 L6,12 L0,10 Z"
+            android:fillColor="#4CAF50"/>
+        <path
+            android:pathData="M8,6 L14,8 L18,14 L14,18 L8,16 Z"
+            android:fillColor="#4CAF50"/>
+    </group>
+    
+</vector>

@@ -149,7 +149,7 @@ fun ProfileScreen(
                             icon = Icons.Default.Person,
                             title = "Edit Profile",
                             subtitle = "Update your personal information",
-                            onClick = { /* TODO: Implement edit profile */ }
+                            onClick = { navController.navigate("edit_profile") }
                         )
                         
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -176,7 +176,7 @@ fun ProfileScreen(
                             icon = Icons.Default.Settings,
                             title = "Settings",
                             subtitle = "App preferences and settings",
-                            onClick = { /* TODO: Implement settings */ }
+                            onClick = { navController.navigate("settings") }
                         )
                         
                         Divider(modifier = Modifier.padding(vertical = 8.dp))

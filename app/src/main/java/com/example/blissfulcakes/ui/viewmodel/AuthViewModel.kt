@@ -85,6 +85,30 @@ class AuthViewModel(
         _authState.value = AuthState.Initial
     }
     
+    fun updateUser(updatedUser: User, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userRepository.updateUser(updatedUser)
+                _currentUser.value = updatedUser
+                onResult(true)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+    
+    fun checkLoginStatus(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                // Check if user is logged in (you might want to use SharedPreferences for this)
+                val isLoggedIn = _currentUser.value != null
+                onResult(isLoggedIn)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+    
     fun clearError() {
         if (_authState.value is AuthState.Error) {
             _authState.value = AuthState.Initial

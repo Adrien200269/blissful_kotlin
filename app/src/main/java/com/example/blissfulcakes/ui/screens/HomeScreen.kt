@@ -1,5 +1,6 @@
 package com.example.blissfulcakes.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,11 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.blissfulcakes.R
 import com.example.blissfulcakes.data.model.Cake
 import com.example.blissfulcakes.di.DependencyProvider
 import com.example.blissfulcakes.ui.viewmodel.AuthViewModel
@@ -52,11 +55,21 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "Blissful Cakes",
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.blissful_cakes_logo),
+                            contentDescription = "Blissful Cakes Logo",
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Blissful Cakes",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE91E63)
+                        )
+                    }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate("cart") }) {

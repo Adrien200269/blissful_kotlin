@@ -3,6 +3,7 @@ package com.example.blissfulcakes.di
 import android.content.Context
 import com.example.blissfulcakes.data.database.BlissfulCakesDatabase
 import com.example.blissfulcakes.data.repository.*
+import com.example.blissfulcakes.data.util.PreferencesManager
 import com.example.blissfulcakes.ui.viewmodel.*
 
 object DependencyProvider {
@@ -42,5 +43,10 @@ object DependencyProvider {
         val orderItemDao = database!!.orderItemDao()
         val orderRepository = OrderRepository(orderDao, orderItemDao)
         return OrderViewModel(orderRepository)
+    }
+    
+    fun provideSettingsViewModel(context: Context): SettingsViewModel {
+        val preferencesManager = PreferencesManager(context)
+        return SettingsViewModel(preferencesManager)
     }
 } 

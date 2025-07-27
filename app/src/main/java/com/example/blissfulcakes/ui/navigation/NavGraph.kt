@@ -10,8 +10,11 @@ import com.example.blissfulcakes.ui.screens.*
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(navController = navController)
+        }
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
         }
@@ -43,10 +46,19 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController)
         }
+        
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(navController = navController)
+        }
+        
+        composable(Screen.Settings.route) {
+            SettingsScreen(navController = navController)
+        }
     }
 }
 
 sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
     object Login : Screen("login")
     object Register : Screen("register")
     object ForgotPassword : Screen("forgot_password")
@@ -55,4 +67,6 @@ sealed class Screen(val route: String) {
     object Checkout : Screen("checkout")
     object Orders : Screen("orders")
     object Profile : Screen("profile")
+    object EditProfile : Screen("edit_profile")
+    object Settings : Screen("settings")
 } 

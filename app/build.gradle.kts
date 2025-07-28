@@ -3,14 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.blissfulcakes"
+    namespace = "com.adrien.blissfulcake"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.blissfulcakes"
+        applicationId = "com.adrien.blissfulcake"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -57,11 +58,6 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
     
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
-    
     // ViewModel
     implementation(libs.androidx.viewmodel.compose)
     
@@ -81,4 +77,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }

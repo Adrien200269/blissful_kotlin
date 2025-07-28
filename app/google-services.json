@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "537880481914",
+    "project_id": "blissfulcakes-1c805",
+    "storage_bucket": "blissfulcakes-1c805.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537880481914:android:d058d3025418f11234ebc3",
+        "android_client_info": {
+          "package_name": "com.adrien.blissfulcake"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ_3nSTiviWGJmP2tOwVHkMGhUaLvU4ZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

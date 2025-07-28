@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Blissfulcakes</string>
+    <string name="splash_loading">Loading Blissful Cakes...</string>
+    <string name="blissful_logo_desc">Blissful Cakes Logo</string>
 </resources>

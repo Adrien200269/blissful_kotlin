@@ -33,11 +33,11 @@ class UserRepository {
     }
 
     suspend fun register(user: User): Long {
-        // Generate a new document with auto ID
-        val docRef = usersCollection.document()
-        val userWithId = user.copy(id = docRef.id.hashCode())
-        docRef.set(userWithId).await()
-        return userWithId.id.toLong()
+        // Generate a unique ID (simulate auto-increment with timestamp)
+        val newId = System.currentTimeMillis().toInt()
+        val userWithId = user.copy(id = newId)
+        usersCollection.document(newId.toString()).set(userWithId).await()
+        return newId.toLong()
     }
 
     fun getUserById(userId: Int): Flow<User?> = callbackFlow {

@@ -31,12 +31,14 @@ import com.example.blissfulcakes.ui.viewmodel.OrderViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
-    navController: NavController
+    navController: NavController,
+    cakeId: Int? = null
 ) {
     val context = LocalContext.current
     val cartViewModel = remember { DependencyProvider.provideCartViewModel(context) }
     val orderViewModel = remember { DependencyProvider.provideOrderViewModel(context) }
     val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
+    val cakeViewModel = remember { DependencyProvider.provideCakeViewModel(context) }
     
     var customerName by remember { mutableStateOf("") }
     var customerAddress by remember { mutableStateOf("") }
@@ -47,6 +49,23 @@ fun CheckoutScreen(
     val totalAmount by cartViewModel.totalAmount.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
     val orderState by orderViewModel.orderState.collectAsState()
+    val cakes by cakeViewModel.cakes.collectAsState()
+    
+    // If cakeId is provided, create a single-item list for checkout
+    val singleCakeItem = cakeId?.let { id ->
+        cakes.find { it.id == id }?.let { cake ->
+            listOf(com.example.blissfulcakes.data.repository.CartItemWithCake(
+                cartItem = com.example.blissfulcakes.data.model.CartItem(
+                    cakeId = cake.id,
+                    quantity = 1,
+                    userId = currentUser?.id ?: 0
+                ),
+                cake = cake
+            ))
+        }
+    }
+    val checkoutItems = singleCakeItem ?: cartItems
+    val checkoutTotal = singleCakeItem?.sumOf { it.cake.price } ?: totalAmount
     
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
@@ -131,7 +150,7 @@ fun CheckoutScreen(
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        cartItems.forEach { cartItemWithCake ->
+                        checkoutItems.forEach { cartItemWithCake ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -161,7 +180,7 @@ fun CheckoutScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "NPR $totalAmount",
+                                text = "NPR $checkoutTotal",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFFE91E63)
@@ -271,7 +290,7 @@ fun CheckoutScreen(
                                 customerAddress = customerAddress,
                                 customerPhone = customerPhone,
                                 customerNotes = customerNotes,
-                                cartItems = cartItems
+                                cartItems = checkoutItems
                             )
                         }
                     },

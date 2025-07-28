@@ -90,6 +90,20 @@ class AuthViewModel(
             _authState.value = AuthState.Initial
         }
     }
+
+    fun updateProfile(name: String, email: String) {
+        viewModelScope.launch {
+            val user = _currentUser.value
+            if (user != null) {
+                val updatedUser = user.copy(name = name, email = email)
+                userRepository.updateUser(updatedUser)
+                _currentUser.value = updatedUser
+                _authState.value = AuthState.Success(updatedUser)
+            } else {
+                _authState.value = AuthState.Error("No user logged in")
+            }
+        }
+    }
 }
 
 sealed class AuthState {

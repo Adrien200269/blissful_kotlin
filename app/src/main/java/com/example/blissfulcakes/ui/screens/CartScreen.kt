@@ -162,19 +162,29 @@ fun CartScreen(
                             .fillMaxWidth()
                             .padding(16.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(20.dp)
                         ) {
+                            Text(
+                                text = "Order Summary",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFE91E63)
+                            )
+                            
+                            Spacer(modifier = Modifier.height(12.dp))
+                            
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Total:",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold
+                                    text = "Total Amount:",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
                                 )
                                 Text(
                                     text = "NPR $totalAmount",
@@ -184,21 +194,38 @@ fun CartScreen(
                                 )
                             }
                             
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                             
                             Button(
                                 onClick = { navController.navigate("checkout") },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                                    .height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
+                                Icon(
+                                    Icons.Default.ShoppingCart,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     "Proceed to Checkout",
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Text(
+                                text = "Complete your purchase with secure checkout",
+                                fontSize = 12.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                 }

@@ -29,10 +29,23 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
-    
     val currentUser by authViewModel.currentUser.collectAsState()
-    
+    var isEditing by remember { mutableStateOf(false) }
+    var name by remember { mutableStateOf(currentUser?.name ?: "") }
+    var email by remember { mutableStateOf(currentUser?.email ?: "") }
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(snackbarMessage)
+            showSnackbar = false
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -50,10 +63,7 @@ fun ProfileScreen(
                             tint = Color(0xFFE91E63)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                }
             )
         }
     ) { paddingValues ->
@@ -62,159 +72,76 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFFFE5E5),
-                            Color(0xFFFFF0F0)
-                        )
+                        colors = listOf(Color(0xFFFFE5E5), Color(0xFFFFF0F0))
                     )
                 )
+                .padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                // Profile Picture
-                Box(
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(80.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFE91E63)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(60.dp),
-                        tint = Color.White
-                    )
-                }
-                
+                        .background(Color(0xFFF5F5F5)),
+                    tint = Color(0xFFE91E63)
+                )
                 Spacer(modifier = Modifier.height(16.dp))
-                
-                // User Name
-                currentUser?.let { user ->
+                if (isEditing) {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            authViewModel.updateProfile(name, email)
+                            isEditing = false
+                            snackbarMessage = "Profile updated!"
+                            showSnackbar = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                    ) {
+                        Text("Save")
+                    }
+                } else {
                     Text(
-                        text = user.name,
-                        fontSize = 24.sp,
+                        text = name,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = user.email,
+                        text = email,
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
-                    
-                    if (user.phone.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
-                        Text(
-                            text = user.phone,
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                // Profile Options
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { isEditing = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
                     ) {
-                        Text(
-                            text = "Account Settings",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE91E63)
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Profile Options
-                        ProfileOption(
-                            icon = Icons.Default.Person,
-                            title = "Edit Profile",
-                            subtitle = "Update your personal information",
-                            onClick = { /* TODO: Implement edit profile */ }
-                        )
-                        
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        
-                        ProfileOption(
-                            icon = Icons.Default.List,
-                            title = "My Orders",
-                            subtitle = "View your order history",
-                            onClick = { navController.navigate("orders") }
-                        )
-                        
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        
-                        ProfileOption(
-                            icon = Icons.Default.ShoppingCart,
-                            title = "Shopping Cart",
-                            subtitle = "View your cart items",
-                            onClick = { navController.navigate("cart") }
-                        )
-                        
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        
-                        ProfileOption(
-                            icon = Icons.Default.Settings,
-                            title = "Settings",
-                            subtitle = "App preferences and settings",
-                            onClick = { /* TODO: Implement settings */ }
-                        )
-                        
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        
-                        ProfileOption(
-                            icon = Icons.Default.Help,
-                            title = "Help & Support",
-                            subtitle = "Get help and contact support",
-                            onClick = { /* TODO: Implement help */ }
-                        )
+                        Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Edit Profile")
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Logout Button
-                Button(
-                    onClick = {
-                        authViewModel.logout()
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
-                    Icon(
-                        Icons.Default.Logout,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Logout", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                }
-                
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -240,9 +167,9 @@ fun ProfileOption(
             modifier = Modifier.size(24.dp),
             tint = Color(0xFFE91E63)
         )
-        
+
         Spacer(modifier = Modifier.width(16.dp))
-        
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -252,14 +179,14 @@ fun ProfileOption(
                 fontWeight = FontWeight.Medium,
                 color = Color.Black
             )
-            
+
             Text(
                 text = subtitle,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
         }
-        
+
         Icon(
             Icons.Default.ChevronRight,
             contentDescription = null,
@@ -267,4 +194,4 @@ fun ProfileOption(
             tint = Color.Gray
         )
     }
-} 
+}

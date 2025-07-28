@@ -32,8 +32,10 @@ fun NavGraph(navController: NavHostController) {
             CartScreen(navController = navController)
         }
         
-        composable(Screen.Checkout.route) {
-            CheckoutScreen(navController = navController)
+        // Update: Accept cakeId as an argument (nullable)
+        composable("checkout?cakeId={cakeId}") { backStackEntry ->
+            val cakeId = backStackEntry.arguments?.getString("cakeId")?.toIntOrNull()
+            CheckoutScreen(navController = navController, cakeId = cakeId)
         }
         
         composable(Screen.Orders.route) {
@@ -52,7 +54,7 @@ sealed class Screen(val route: String) {
     object ForgotPassword : Screen("forgot_password")
     object Home : Screen("home")
     object Cart : Screen("cart")
-    object Checkout : Screen("checkout")
+    object Checkout : Screen("checkout?cakeId={cakeId}")
     object Orders : Screen("orders")
     object Profile : Screen("profile")
 } 

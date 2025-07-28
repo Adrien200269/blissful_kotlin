@@ -42,13 +42,29 @@ fun HomeScreen(
     val currentUser by authViewModel.currentUser.collectAsState()
     val cartItemCount by cartViewModel.itemCount.collectAsState()
     
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+    
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
             cartViewModel.loadCartItems(user.id)
         }
     }
     
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage,
+                duration = SnackbarDuration.Short
+            )
+            showSnackbar = false
+        }
+    }
+    
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -59,21 +75,30 @@ fun HomeScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate("cart") }) {
-                        Badge(
-                            containerColor = Color(0xFFE91E63)
+                    Box {
+                        IconButton(
+                            onClick = { navController.navigate("cart") },
+                            modifier = Modifier.padding(8.dp)
                         ) {
-                            Text(
-                                text = cartItemCount.toString(),
-                                color = Color.White,
-                                fontSize = 12.sp
+                            Icon(
+                                Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color(0xFFE91E63),
+                                modifier = Modifier.size(28.dp)
                             )
                         }
-                        Icon(
-                            Icons.Default.ShoppingCart,
-                            contentDescription = "Cart",
-                            tint = Color(0xFFE91E63)
-                        )
+                        if (cartItemCount > 0) {
+                            Badge(
+                                containerColor = Color(0xFFE91E63),
+                                modifier = Modifier.align(Alignment.TopEnd)
+                            ) {
+                                Text(
+                                    text = cartItemCount.toString(),
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -152,16 +177,16 @@ fun HomeScreen(
                         text = "Categories",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = Color.Black
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    val categories = listOf("All", "Chocolate", "Vanilla", "Specialty", "Fruit")
-                    
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        val categories = listOf("All", "Chocolate", "Vanilla", "Fruit", "Wedding", "Birthday")
+                        
                         items(categories) { category ->
                             FilterChip(
                                 selected = selectedCategory == category,
@@ -183,7 +208,7 @@ fun HomeScreen(
                         text = "Our Cakes",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = Color.Black
                     )
                     
                     Spacer(modifier = Modifier.height(12.dp))
@@ -195,6 +220,8 @@ fun HomeScreen(
                         onAddToCart = {
                             currentUser?.let { user ->
                                 cartViewModel.addToCart(user.id, cake.id)
+                                snackbarMessage = "Added to cart!"
+                                showSnackbar = true
                             }
                         }
                     )
@@ -222,7 +249,8 @@ fun CakeCard(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // Cake Image
             Box(
@@ -245,9 +273,7 @@ fun CakeCard(
             
             // Cake Details
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
+                modifier = Modifier.weight(1f).padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
@@ -280,18 +306,13 @@ fun CakeCard(
                 
                 Button(
                     onClick = onAddToCart,
-                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
                 ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(Icons.Default.AddShoppingCart, contentDescription = "Add to Cart")
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text("Add to Cart")
                 }
             }
         }
     }
-} 
+}

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adrien.blissfulcake.data.model.User
 import com.adrien.blissfulcake.data.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,36 +29,55 @@ class AuthViewModel(
                     _currentUser.value = user
                     _authState.value = AuthState.Success(user)
                 } else {
-                    _authState.value = AuthState.Error("Invalid email or password")
+                    _authState.value = AuthState.Error("Login failed: User not found in database after authentication. If you registered before, please register again.")
                 }
+            } catch (e: com.google.firebase.auth.FirebaseAuthException) {
+                _authState.value = AuthState.Error("FirebaseAuth error: ${e.message}")
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Login failed")
+                _authState.value = AuthState.Error("Login failed: ${e.message}")
             }
         }
     }
     
-    // TODO: Implement register function or remove this call if not needed.
     fun register(name: String, email: String, password: String, phone: String = "") {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                val existingUser = userRepository.getUserByEmail(email)
-                if (existingUser != null) {
-                    _authState.value = AuthState.Error("Email already registered")
+                // Validate input
+                if (name.isBlank()) {
+                    _authState.value = AuthState.Error("Name is required")
+                    return@launch
+                }
+                if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    _authState.value = AuthState.Error("Please enter a valid email address")
+                    return@launch
+                }
+                if (password.length < 6) {
+                    _authState.value = AuthState.Error("Password must be at least 6 characters")
                     return@launch
                 }
                 
                 val user = User(
-                    name = name,
-                    email = email,
+                    name = name.trim(),
+                    email = email.trim().lowercase(),
                     password = password,
-                    phone = phone
+                    phone = phone.trim()
                 )
                 
                 val userId = userRepository.register(user)
-                val newUser = user.copy(id = userId.toInt())
+                val newUser = user.copy(id = userId.toInt(), password = "")
                 _currentUser.value = newUser
                 _authState.value = AuthState.Success(newUser)
+            } catch (e: FirebaseAuthException) {
+                val errorMessage = when (e.errorCode) {
+                    "ERROR_INVALID_EMAIL" -> "Please enter a valid email address"
+                    "ERROR_WEAK_PASSWORD" -> "Password is too weak. Use at least 6 characters"
+                    "ERROR_EMAIL_ALREADY_IN_USE" -> "An account with this email already exists"
+                    "ERROR_OPERATION_NOT_ALLOWED" -> "Email/password sign up is not enabled"
+                    "ERROR_TOO_MANY_REQUESTS" -> "Too many attempts. Try again later"
+                    else -> "Registration failed: ${e.message}"
+                }
+                _authState.value = AuthState.Error(errorMessage)
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Registration failed")
             }
@@ -82,6 +102,7 @@ class AuthViewModel(
     }
     
     fun logout() {
+        userRepository.logout()
         _currentUser.value = null
         _authState.value = AuthState.Initial
     }

@@ -40,6 +40,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.rotate
 import kotlin.random.Random
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,9 +61,16 @@ fun LoginScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
+                Log.d("LoginScreen", "Login successful, navigating to home")
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
                 }
+            }
+            is AuthState.Error -> {
+                Log.e("LoginScreen", "Login error: ${(authState as AuthState.Error).message}")
+            }
+            is AuthState.Loading -> {
+                Log.d("LoginScreen", "Login in progress...")
             }
             else -> {}
         }
@@ -232,9 +242,50 @@ fun LoginScreen(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
+                    // Test Firebase Connection Button
+                    OutlinedButton(
+                        onClick = { 
+                            Log.d("LoginScreen", "Testing Firebase connection...")
+                            try {
+                                val auth = FirebaseAuth.getInstance()
+                                val firestore = FirebaseFirestore.getInstance()
+                                Log.d("LoginScreen", "Firebase Auth: ${auth.app.name}")
+                                Log.d("LoginScreen", "Firebase Firestore: ${firestore.app.name}")
+                                
+                                // Test if user exists in Firebase Auth
+                                if (email.isNotEmpty()) {
+                                    Log.d("LoginScreen", "Testing if user exists in Firebase Auth")
+                                    // Note: We can't directly check if user exists without password
+                                    // This is just for connection testing
+                                }
+                                
+                                // Test Firestore connection
+                                firestore.collection("test").document("login_test")
+                                    .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
+                                    .addOnSuccessListener {
+                                        Log.d("LoginScreen", "Firebase connection test successful")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("LoginScreen", "Firebase connection test failed: ${e.message}")
+                                    }
+                            } catch (e: Exception) {
+                                Log.e("LoginScreen", "Firebase test error: ${e.message}", e)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Test Firebase Connection", fontSize = 14.sp)
+                    }
+                    
                     // Login Button
                     Button(
-                        onClick = { viewModel.login(email, password) },
+                        onClick = { 
+                            Log.d("LoginScreen", "Login button clicked")
+                            Log.d("LoginScreen", "Email: $email, Password length: ${password.length}")
+                            viewModel.login(email, password) 
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),

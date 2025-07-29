@@ -39,6 +39,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.rotate
 import kotlin.random.Random
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +64,16 @@ fun RegisterScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
+                Log.d("RegisterScreen", "Registration successful, navigating to home")
                 navController.navigate("home") {
                     popUpTo("register") { inclusive = true }
                 }
+            }
+            is AuthState.Error -> {
+                Log.e("RegisterScreen", "Registration error: ${(authState as AuthState.Error).message}")
+            }
+            is AuthState.Loading -> {
+                Log.d("RegisterScreen", "Registration in progress...")
             }
             else -> {}
         }
@@ -311,11 +321,47 @@ fun RegisterScreen(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
+                    // Test Firebase Connection Button
+                    OutlinedButton(
+                        onClick = { 
+                            Log.d("RegisterScreen", "Testing Firebase connection...")
+                            // Test Firebase connection
+                            try {
+                                val auth = FirebaseAuth.getInstance()
+                                val firestore = FirebaseFirestore.getInstance()
+                                Log.d("RegisterScreen", "Firebase Auth: ${auth.app.name}")
+                                Log.d("RegisterScreen", "Firebase Firestore: ${firestore.app.name}")
+                                
+                                // Test Firestore write
+                                firestore.collection("test").document("register_test")
+                                    .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
+                                    .addOnSuccessListener {
+                                        Log.d("RegisterScreen", "Firebase connection test successful")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("RegisterScreen", "Firebase connection test failed: ${e.message}")
+                                    }
+                            } catch (e: Exception) {
+                                Log.e("RegisterScreen", "Firebase test error: ${e.message}", e)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Test Firebase Connection", fontSize = 14.sp)
+                    }
+                    
                     // Register Button
                     Button(
                         onClick = { 
+                            Log.d("RegisterScreen", "Register button clicked")
+                            Log.d("RegisterScreen", "Name: $name, Email: $email, Password length: ${password.length}")
                             if (password == confirmPassword) {
+                                Log.d("RegisterScreen", "Passwords match, calling register")
                                 viewModel.register(name, email, password, phone)
+                            } else {
+                                Log.e("RegisterScreen", "Passwords do not match")
                             }
                         },
                         modifier = Modifier

@@ -133,9 +133,31 @@ class UserRepository {
                     password = "" // Don't store password in Firestore
                 )
                 
-                Log.d(TAG, "Storing user data in Firestore: $userWithFirebaseId")
-                usersCollection.document(firebaseUser.uid).set(userWithFirebaseId).await()
-                Log.d(TAG, "User data stored in Firestore successfully")
+                Log.d(TAG, "Preparing to store user data in Firestore: $userWithFirebaseId")
+                Log.d(TAG, "Firestore document ID will be: ${firebaseUser.uid}")
+                
+                try {
+                    usersCollection.document(firebaseUser.uid).set(userWithFirebaseId).await()
+                    Log.d(TAG, "User data stored in Firestore successfully")
+                    
+                    // Verify the document was created
+                    val verificationDoc = usersCollection.document(firebaseUser.uid).get().await()
+                    if (verificationDoc.exists()) {
+                        Log.d(TAG, "Firestore document verification successful")
+                    } else {
+                        Log.e(TAG, "Firestore document verification failed - document does not exist")
+                    }
+                } catch (firestoreError: Exception) {
+                    Log.e(TAG, "Error storing user data in Firestore: ${firestoreError.message}", firestoreError)
+                    // Try to delete the Firebase Auth user since Firestore failed
+                    try {
+                        firebaseUser.delete().await()
+                        Log.d(TAG, "Deleted Firebase Auth user due to Firestore failure")
+                    } catch (deleteError: Exception) {
+                        Log.e(TAG, "Error deleting Firebase Auth user: ${deleteError.message}")
+                    }
+                    throw firestoreError
+                }
                 
                 firebaseUser.uid.hashCode().toLong()
             } else {

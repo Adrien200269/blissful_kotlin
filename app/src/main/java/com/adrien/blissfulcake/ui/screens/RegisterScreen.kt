@@ -332,14 +332,19 @@ fun RegisterScreen(
                                 Log.d("RegisterScreen", "Firebase Auth: ${auth.app.name}")
                                 Log.d("RegisterScreen", "Firebase Firestore: ${firestore.app.name}")
                                 
-                                // Test Firestore write
+                                // Test Firestore write permissions
                                 firestore.collection("test").document("register_test")
-                                    .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
+                                    .set(mapOf(
+                                        "test" to "connection", 
+                                        "timestamp" to System.currentTimeMillis(),
+                                        "email" to email,
+                                        "name" to name
+                                    ))
                                     .addOnSuccessListener {
-                                        Log.d("RegisterScreen", "Firebase connection test successful")
+                                        Log.d("RegisterScreen", "Firebase connection and write test successful")
                                     }
                                     .addOnFailureListener { e ->
-                                        Log.e("RegisterScreen", "Firebase connection test failed: ${e.message}")
+                                        Log.e("RegisterScreen", "Firebase connection or write test failed: ${e.message}")
                                     }
                             } catch (e: Exception) {
                                 Log.e("RegisterScreen", "Firebase test error: ${e.message}", e)
@@ -349,7 +354,40 @@ fun RegisterScreen(
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Test Firebase Connection", fontSize = 14.sp)
+                        Text("Test Firebase Connection & Write", fontSize = 14.sp)
+                    }
+                    
+                    // Manual Test User Creation Button
+                    OutlinedButton(
+                        onClick = { 
+                            Log.d("RegisterScreen", "Creating test user document manually...")
+                            try {
+                                val firestore = FirebaseFirestore.getInstance()
+                                val testUser = mapOf(
+                                    "id" to 12345,
+                                    "email" to "test@example.com",
+                                    "password" to "",
+                                    "name" to "Test User",
+                                    "phone" to ""
+                                )
+                                
+                                firestore.collection("users").document("test_user_manual")
+                                    .set(testUser)
+                                    .addOnSuccessListener {
+                                        Log.d("RegisterScreen", "Manual test user document created successfully")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("RegisterScreen", "Manual test user creation failed: ${e.message}")
+                                    }
+                            } catch (e: Exception) {
+                                Log.e("RegisterScreen", "Manual test user creation error: ${e.message}", e)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF9C27B0)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Create Test User Document", fontSize = 14.sp)
                     }
                     
                     // Register Button

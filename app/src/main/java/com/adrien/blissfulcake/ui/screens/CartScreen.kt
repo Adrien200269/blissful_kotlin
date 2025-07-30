@@ -19,7 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.adrien.blissfulcake.data.model.Cake
 import com.adrien.blissfulcake.data.model.CartItem
+import com.adrien.blissfulcake.data.repository.CartItemWithCake
 import com.adrien.blissfulcake.di.DependencyProvider
 import com.adrien.blissfulcake.ui.viewmodel.AuthViewModel
 import com.adrien.blissfulcake.ui.viewmodel.CartViewModel
@@ -237,7 +239,7 @@ fun CartScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartItemCard(
-    cartItemWithCake: com.adrien.blissfulcake.data.repository.CartItemWithCake,
+    cartItemWithCake: CartItemWithCake,
     onUpdateQuantity: (Int) -> Unit,
     onRemove: () -> Unit
 ) {
@@ -337,4 +339,4 @@ fun CartItemCard(
             }
         }
     }
-} 
+}

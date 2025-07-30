@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.rotate
 import kotlin.random.Random
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyColumn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -75,285 +76,289 @@ fun LoginScreen(
             else -> {}
         }
     }
-    
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFFFF8F8),
-                        Color(0xFFFFE8E8),
-                        Color(0xFFFFF0F0)
-                    )
-                )
-            )
-    ) {
-        // Animated background particles
-        FloatingParticles()
-        
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            val scaleAnim = rememberInfiniteTransition().animateFloat(
-                initialValue = 0.8f,
-                targetValue = 1.1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(2000, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse
-                )
-            )
-            
-            val alphaAnim = rememberInfiniteTransition().animateFloat(
-                initialValue = 0.3f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1800, easing = FastOutSlowInEasing),
-                    repeatMode = RepeatMode.Reverse
-                )
-            )
-            
-            Image(
-                painter = painterResource(id = R.drawable.blissful_logo),
-                contentDescription = stringResource(id = R.string.blissful_logo_desc),
+
+    LazyColumn {
+        item{
+            Box(
                 modifier = Modifier
-                    .height(140.dp)
-                    .scale(scaleAnim.value)
-                    .alpha(alphaAnim.value)
-                    .shadow(8.dp, RoundedCornerShape(20.dp))
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Text(
-                text = "Sweet moments, delivered to you",
-                fontSize = 18.sp,
-                color = Color(0xFF9C27B0),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Medium
-            )
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
-            // Login Form
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(16.dp, RoundedCornerShape(20.dp)),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
-                    modifier = Modifier.padding(32.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Text(
-                        text = "Welcome Back",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63),
-                        textAlign = TextAlign.Center
-                    )
-                    
-                    Text(
-                        text = "Sign in to continue your sweet journey",
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Email Field
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        leadingIcon = { 
-                            Icon(
-                                Icons.Default.Email, 
-                                contentDescription = null,
-                                tint = Color(0xFFE91E63)
-                            ) 
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    
-                    // Password Field
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Password") },
-                        leadingIcon = { 
-                            Icon(
-                                Icons.Default.Lock, 
-                                contentDescription = null,
-                                tint = Color(0xFFE91E63)
-                            ) 
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                    contentDescription = null,
-                                    tint = Color(0xFFE91E63)
-                                )
-                            }
-                        },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    
-                    // Forgot Password Link
-                    TextButton(
-                        onClick = { navController.navigate("forgot_password") },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text(
-                            text = "Forgot Password?",
-                            color = Color(0xFFE91E63),
-                            fontWeight = FontWeight.Medium
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFFFFF8F8),
+                                Color(0xFFFFE8E8),
+                                Color(0xFFFFF0F0)
+                            )
                         )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Test Firebase Connection Button
-                    OutlinedButton(
-                        onClick = { 
-                            Log.d("LoginScreen", "Testing Firebase connection...")
-                            try {
-                                val auth = FirebaseAuth.getInstance()
-                                val firestore = FirebaseFirestore.getInstance()
-                                Log.d("LoginScreen", "Firebase Auth: ${auth.app.name}")
-                                Log.d("LoginScreen", "Firebase Firestore: ${firestore.app.name}")
-                                
-                                // Test if user exists in Firebase Auth
-                                if (email.isNotEmpty()) {
-                                    Log.d("LoginScreen", "Testing if user exists in Firebase Auth")
-                                    // Note: We can't directly check if user exists without password
-                                    // This is just for connection testing
-                                }
-                                
-                                // Test Firestore connection
-                                firestore.collection("test").document("login_test")
-                                    .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
-                                    .addOnSuccessListener {
-                                        Log.d("LoginScreen", "Firebase connection test successful")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("LoginScreen", "Firebase connection test failed: ${e.message}")
-                                    }
-                            } catch (e: Exception) {
-                                Log.e("LoginScreen", "Firebase test error: ${e.message}", e)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Test Firebase Connection", fontSize = 14.sp)
-                    }
-                    
-                    // Login Button
-                    Button(
-                        onClick = { 
-                            Log.d("LoginScreen", "Login button clicked")
-                            Log.d("LoginScreen", "Email: $email, Password length: ${password.length}")
-                            viewModel.login(email, password) 
-                        },
+                    )
+            ) {
+                // Animated background particles
+                FloatingParticles()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    val scaleAnim = rememberInfiniteTransition().animateFloat(
+                        initialValue = 0.8f,
+                        targetValue = 1.1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(2000, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
+
+                    val alphaAnim = rememberInfiniteTransition().animateFloat(
+                        initialValue = 0.3f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1800, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
+
+                    Image(
+                        painter = painterResource(id = R.drawable.blissful_logo),
+                        contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                        modifier = Modifier
+                            .height(140.dp)
+                            .scale(scaleAnim.value)
+                            .alpha(alphaAnim.value)
+                            .shadow(8.dp, RoundedCornerShape(20.dp))
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Sweet moments, delivered to you",
+                        fontSize = 18.sp,
+                        color = Color(0xFF9C27B0),
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(modifier = Modifier.height(48.dp))
+
+                    // Login Form
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                        enabled = email.isNotEmpty() && password.isNotEmpty() && authState !is AuthState.Loading,
-                        shape = RoundedCornerShape(16.dp)
+                            .shadow(16.dp, RoundedCornerShape(20.dp)),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        if (authState is AuthState.Loading) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Text(
-                                "Sign In", 
-                                fontSize = 18.sp, 
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    
-                    // Error Message
-                    if (authState is AuthState.Error) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                            shape = RoundedCornerShape(8.dp)
+                        Column(
+                            modifier = Modifier.padding(32.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
                             Text(
-                                text = (authState as AuthState.Error).message,
-                                color = Color(0xFFD32F2F),
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(12.dp)
+                                text = "Welcome Back",
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFE91E63),
+                                textAlign = TextAlign.Center
                             )
+
+                            Text(
+                                text = "Sign in to continue your sweet journey",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Email Field
+                            OutlinedTextField(
+                                value = email,
+                                onValueChange = { email = it },
+                                label = { Text("Email") },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Email,
+                                        contentDescription = null,
+                                        tint = Color(0xFFE91E63)
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Email,
+                                    imeAction = ImeAction.Next
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFFE91E63),
+                                    focusedLabelColor = Color(0xFFE91E63),
+                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            // Password Field
+                            OutlinedTextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                label = { Text("Password") },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Lock,
+                                        contentDescription = null,
+                                        tint = Color(0xFFE91E63)
+                                    )
+                                },
+                                trailingIcon = {
+                                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Icon(
+                                            if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                            contentDescription = null,
+                                            tint = Color(0xFFE91E63)
+                                        )
+                                    }
+                                },
+                                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Password,
+                                    imeAction = ImeAction.Done
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFFE91E63),
+                                    focusedLabelColor = Color(0xFFE91E63),
+                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            // Forgot Password Link
+                            TextButton(
+                                onClick = { navController.navigate("forgot_password") },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(
+                                    text = "Forgot Password?",
+                                    color = Color(0xFFE91E63),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Test Firebase Connection Button
+                            OutlinedButton(
+                                onClick = {
+                                    Log.d("LoginScreen", "Testing Firebase connection...")
+                                    try {
+                                        val auth = FirebaseAuth.getInstance()
+                                        val firestore = FirebaseFirestore.getInstance()
+                                        Log.d("LoginScreen", "Firebase Auth: ${auth.app.name}")
+                                        Log.d("LoginScreen", "Firebase Firestore: ${firestore.app.name}")
+
+                                        // Test if user exists in Firebase Auth
+                                        if (email.isNotEmpty()) {
+                                            Log.d("LoginScreen", "Testing if user exists in Firebase Auth")
+                                            // Note: We can't directly check if user exists without password
+                                            // This is just for connection testing
+                                        }
+
+                                        // Test Firestore connection
+                                        firestore.collection("test").document("login_test")
+                                            .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
+                                            .addOnSuccessListener {
+                                                Log.d("LoginScreen", "Firebase connection test successful")
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e("LoginScreen", "Firebase connection test failed: ${e.message}")
+                                            }
+                                    } catch (e: Exception) {
+                                        Log.e("LoginScreen", "Firebase test error: ${e.message}", e)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text("Test Firebase Connection", fontSize = 14.sp)
+                            }
+
+                            // Login Button
+                            Button(
+                                onClick = {
+                                    Log.d("LoginScreen", "Login button clicked")
+                                    Log.d("LoginScreen", "Email: $email, Password length: ${password.length}")
+                                    viewModel.login(email, password)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                                enabled = email.isNotEmpty() && password.isNotEmpty() && authState !is AuthState.Loading,
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                if (authState is AuthState.Loading) {
+                                    CircularProgressIndicator(
+                                        color = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        "Sign In",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                            // Error Message
+                            if (authState is AuthState.Error) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = (authState as AuthState.Error).message,
+                                        color = Color(0xFFD32F2F),
+                                        fontSize = 14.sp,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(12.dp)
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Register Link
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Don't have an account? ",
-                        color = Color.Gray,
-                        fontSize = 16.sp
-                    )
-                    TextButton(
-                        onClick = { navController.navigate("register") },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE91E63))
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Register Link
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
-                        Text(
-                            text = "Sign Up",
-                            color = Color(0xFFE91E63),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Don't have an account? ",
+                                color = Color.Gray,
+                                fontSize = 16.sp
+                            )
+                            TextButton(
+                                onClick = { navController.navigate("register") },
+                                colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE91E63))
+                            ) {
+                                Text(
+                                    text = "Sign Up",
+                                    color = Color(0xFFE91E63),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
                     }
                 }
             }

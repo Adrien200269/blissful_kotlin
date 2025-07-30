@@ -102,13 +102,6 @@ class CakeViewModel(
                     imageUrl = "black_forest_cake",
                     category = "Specialty"
                 ),
-                Cake(
-                    name = "Carrot Cake",
-                    description = "Moist carrot cake with cream cheese frosting",
-                    price = 1100.0,
-                    imageUrl = "carrot_cake",
-                    category = "Specialty"
-                )
             )
             
             sampleCakes.forEach { cake ->

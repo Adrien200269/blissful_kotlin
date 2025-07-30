@@ -19,43 +19,10 @@ class UserRepository {
         private const val TAG = "UserRepository"
     }
 
-    // Test Firebase connectivity
-    suspend fun testFirebaseConnection(): Boolean {
-        return try {
-            Log.d(TAG, "Testing Firebase connection...")
-            
-            // Test Firestore connection
-            val testDoc = usersCollection.document("connection_test")
-            testDoc.set(mapOf(
-                "test" to "connection",
-                "timestamp" to System.currentTimeMillis()
-            )).await()
-            Log.d(TAG, "Firestore write test successful")
-            
-            // Test Firestore read
-            val snapshot = testDoc.get().await()
-            Log.d(TAG, "Firestore read test successful: ${snapshot.data}")
-            
-            // Clean up
-            testDoc.delete().await()
-            Log.d(TAG, "Firebase connection test completed successfully")
-            true
-        } catch (e: Exception) {
-            Log.e(TAG, "Firebase connection test failed: ${e.message}", e)
-            false
-        }
-    }
-
     suspend fun login(email: String, password: String): User? {
         return try {
             val cleanEmail = email.trim().lowercase()
             Log.d(TAG, "Attempting login for email: $cleanEmail")
-            
-            // Test connection first
-            if (!testFirebaseConnection()) {
-                Log.e(TAG, "Firebase connection test failed during login")
-                throw Exception("Network error: Unable to connect to Firebase")
-            }
             
             val result = auth.signInWithEmailAndPassword(cleanEmail, password).await()
             val firebaseUser = result.user
@@ -171,12 +138,6 @@ class UserRepository {
         return try {
             Log.d(TAG, "Starting registration for email: $email")
             
-            // Test Firebase connection first
-            if (!testFirebaseConnection()) {
-                Log.e(TAG, "Firebase connection test failed during registration")
-                throw Exception("Network error: Unable to connect to Firebase. Please check your internet connection and try again.")
-            }
-            
             // First, create Firebase Auth user
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val firebaseUser = authResult.user
@@ -214,7 +175,7 @@ class UserRepository {
                     } catch (deleteError: Exception) {
                         Log.e(TAG, "Error deleting Firebase Auth user: ${deleteError.message}")
                     }
-                    throw Exception("Network error: Failed to save user data. Please try again.")
+                    throw firestoreError
                 }
                 
                 firebaseUser.uid

@@ -52,16 +52,16 @@ fun CartScreen(
                     Text(
                         text = "Shopping Cart",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color(0xFFE91E63)
-                        )
+                                        Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.primary
+                )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -73,14 +73,14 @@ fun CartScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFFFE5E5),
-                            Color(0xFFFFF0F0)
+                                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
                         )
-                    )
-                )
         ) {
             if (cartItems.isEmpty()) {
                 // Empty Cart
@@ -174,7 +174,7 @@ fun CartScreen(
                                 text = "Order Summary",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE91E63)
+                                color = MaterialTheme.colorScheme.primary
                             )
                             
                             Spacer(modifier = Modifier.height(12.dp))
@@ -192,7 +192,7 @@ fun CartScreen(
                                     text = "NPR $totalAmount",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFE91E63)
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             
@@ -203,7 +203,7 @@ fun CartScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Icon(
@@ -265,7 +265,7 @@ fun CartItemCard(
                     Icons.Default.Cake,
                     contentDescription = null,
                     modifier = Modifier.size(30.dp),
-                    tint = Color(0xFFE91E63)
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             

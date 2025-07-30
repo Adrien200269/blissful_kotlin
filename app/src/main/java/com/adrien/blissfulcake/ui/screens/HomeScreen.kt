@@ -116,10 +116,10 @@ fun HomeScreen(
                                 .shadow(4.dp, RoundedCornerShape(12.dp))
                                 .background(
                                     Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFFE91E63),
-                                            Color(0xFFC2185B)
-                                        )
+                                                                        colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
                                     ),
                                     RoundedCornerShape(12.dp)
                                 )
@@ -133,7 +133,7 @@ fun HomeScreen(
                         }
                         if (cartItemCount > 0) {
                             Badge(
-                                containerColor = Color(0xFFFF5722),
+                                containerColor = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.align(Alignment.TopEnd)
                             ) {
                                 Text(
@@ -154,7 +154,7 @@ fun HomeScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
-                contentColor = Color(0xFFE91E63),
+                                                contentColor = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.shadow(8.dp)
             ) {
                 NavigationBarItem(
@@ -271,7 +271,7 @@ fun HomeScreen(
                         text = "Categories",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -303,9 +303,9 @@ fun HomeScreen(
                                 },
                                 modifier = Modifier.scale(scaleAnim.value),
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = Color(0xFFE91E63),
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = Color.White,
-                                    containerColor = Color.White.copy(alpha = 0.8f)
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                                 ),
                                 shape = RoundedCornerShape(20.dp)
                             )
@@ -320,7 +320,7 @@ fun HomeScreen(
                         text = "Our Cakes",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -369,33 +369,6 @@ fun HomeScreen(
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Button(
-                                    onClick = { cakeViewModel.addTestCakes() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary
-                                    )
-                                ) {
-                                    Text("Add Test Cakes")
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                OutlinedButton(
-                                    onClick = { cakeViewModel.testFirestoreConnection() },
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.primary
-                                    )
-                                ) {
-                                    Text("Test Firestore Connection")
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                OutlinedButton(
-                                    onClick = { cakeViewModel.listAllCakesInFirestore() },
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.primary
-                                    )
-                                ) {
-                                    Text("List All Cakes in Firestore")
-                                }
                             }
                         }
                     }
@@ -437,6 +410,7 @@ fun HomeScreen(
 private fun FloatingParticles() {
     val particles = remember { List(15) { Random.nextFloat() } }
     val animation = rememberInfiniteTransition()
+    val colorScheme = MaterialTheme.colorScheme
     
     val alpha by animation.animateFloat(
         initialValue = 0.1f,
@@ -464,7 +438,7 @@ private fun FloatingParticles() {
             
             rotate(degrees = rotation) {
                 drawCircle(
-                    color = Color(0xFFE91E63).copy(alpha = alpha),
+                    color = colorScheme.primary.copy(alpha = alpha),
                     radius = radius,
                     center = Offset(x, y)
                 )
@@ -509,10 +483,10 @@ fun CakeCard(
                     .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
                     .background(
                         Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFFCE4EC),
-                                Color(0xFFF8BBD9)
-                            )
+                                                            colors = listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                )
                         )
                     )
             ) {
@@ -533,7 +507,7 @@ fun CakeCard(
                         .size(70.dp)
                         .align(Alignment.Center)
                         .scale(iconAnim.value),
-                    tint = Color(0xFFE91E63)
+                                                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             
@@ -547,7 +521,7 @@ fun CakeCard(
                         text = cake.name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -555,7 +529,7 @@ fun CakeCard(
                     Text(
                         text = cake.description,
                         fontSize = 14.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -566,7 +540,7 @@ fun CakeCard(
                         text = "NPR ${cake.price}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 
@@ -586,7 +560,7 @@ fun CakeCard(
                         .fillMaxWidth()
                         .scale(buttonAnim.value),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE91E63)
+                                                        containerColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {

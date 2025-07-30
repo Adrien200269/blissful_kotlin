@@ -82,15 +82,15 @@ fun LoginScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFFFF8F8),
-                                Color(0xFFFFE8E8),
-                                Color(0xFFFFF0F0)
+                                            .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.background,
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    MaterialTheme.colorScheme.surface
+                                )
                             )
                         )
-                    )
             ) {
                 // Animated background particles
                 FloatingParticles()
@@ -247,45 +247,6 @@ fun LoginScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // Test Firebase Connection Button
-                            OutlinedButton(
-                                onClick = {
-                                    Log.d("LoginScreen", "Testing Firebase connection...")
-                                    try {
-                                        val auth = FirebaseAuth.getInstance()
-                                        val firestore = FirebaseFirestore.getInstance()
-                                        Log.d("LoginScreen", "Firebase Auth: ${auth.app.name}")
-                                        Log.d("LoginScreen", "Firebase Firestore: ${firestore.app.name}")
-
-                                        // Test if user exists in Firebase Auth
-                                        if (email.isNotEmpty()) {
-                                            Log.d("LoginScreen", "Testing if user exists in Firebase Auth")
-                                            // Note: We can't directly check if user exists without password
-                                            // This is just for connection testing
-                                        }
-
-                                        // Test Firestore connection
-                                        firestore.collection("test").document("login_test")
-                                            .set(mapOf("test" to "connection", "timestamp" to System.currentTimeMillis()))
-                                            .addOnSuccessListener {
-                                                Log.d("LoginScreen", "Firebase connection test successful")
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.e("LoginScreen", "Firebase connection test failed: ${e.message}")
-                                            }
-                                    } catch (e: Exception) {
-                                        Log.e("LoginScreen", "Firebase test error: ${e.message}", e)
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text("Test Firebase Connection", fontSize = 14.sp)
-                            }
-
                             // Login Button
                             Button(
                                 onClick = {
@@ -296,7 +257,7 @@ fun LoginScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 enabled = email.isNotEmpty() && password.isNotEmpty() && authState !is AuthState.Loading,
                                 shape = RoundedCornerShape(16.dp)
                             ) {
@@ -318,12 +279,12 @@ fun LoginScreen(
                             if (authState is AuthState.Error) {
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text(
                                         text = (authState as AuthState.Error).message,
-                                        color = Color(0xFFD32F2F),
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.padding(12.dp)
@@ -353,11 +314,11 @@ fun LoginScreen(
                             )
                             TextButton(
                                 onClick = { navController.navigate("register") },
-                                colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE91E63))
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
                             ) {
                                 Text(
                                     text = "Sign Up",
-                                    color = Color(0xFFE91E63),
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
@@ -374,6 +335,7 @@ fun LoginScreen(
 private fun FloatingParticles() {
     val particles = remember { List(20) { Random.nextFloat() } }
     val animation = rememberInfiniteTransition()
+    val colorScheme = MaterialTheme.colorScheme
     
     val alpha by animation.animateFloat(
         initialValue = 0.1f,
@@ -401,7 +363,7 @@ private fun FloatingParticles() {
             
             rotate(degrees = rotation) {
                 drawCircle(
-                    color = Color(0xFFE91E63).copy(alpha = alpha),
+                    color = colorScheme.primary.copy(alpha = alpha),
                     radius = radius,
                     center = Offset(x, y)
                 )

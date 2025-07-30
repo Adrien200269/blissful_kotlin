@@ -39,14 +39,14 @@ fun ForgotPasswordScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFFFE5E5),
-                        Color(0xFFFFF0F0)
-                    )
-                )
-            )
+                                    .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
+                        )
     ) {
         Column(
             modifier = Modifier
@@ -63,7 +63,7 @@ fun ForgotPasswordScreen(
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color(0xFFE91E63)
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -76,7 +76,7 @@ fun ForgotPasswordScreen(
                 text = "Forgot Password",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFE91E63),
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
             )
             
@@ -113,8 +113,8 @@ fun ForgotPasswordScreen(
                             imeAction = ImeAction.Done
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
                         )
                     )
                     
@@ -124,7 +124,7 @@ fun ForgotPasswordScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         enabled = email.isNotEmpty() && authState !is AuthState.Loading
                     ) {
                         if (authState is AuthState.Loading) {
@@ -168,7 +168,7 @@ fun ForgotPasswordScreen(
             ) {
                 Text(
                     text = "Back to Login",
-                    color = Color(0xFFE91E63),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
                 )
             }

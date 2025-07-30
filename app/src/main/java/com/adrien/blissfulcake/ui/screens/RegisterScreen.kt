@@ -82,15 +82,15 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFFFF8F8),
-                        Color(0xFFFFE8E8),
-                        Color(0xFFFFF0F0)
-                    )
-                )
-            )
+                                    .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.background,
+                                    MaterialTheme.colorScheme.surfaceVariant,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
+                        )
     ) {
         // Animated background particles
         FloatingParticles()
@@ -329,95 +329,6 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(12.dp)
                     )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Test Firebase Connection Button
-                    OutlinedButton(
-                        onClick = { 
-                            Log.d("RegisterScreen", "Testing Firebase connection...")
-                            // Test Firebase connection
-                            try {
-                                val auth = FirebaseAuth.getInstance()
-                                val firestore = FirebaseFirestore.getInstance()
-                                Log.d("RegisterScreen", "Firebase Auth: ${auth.app.name}")
-                                Log.d("RegisterScreen", "Firebase Firestore: ${firestore.app.name}")
-                                
-                                // Test Firestore write permissions
-                                firestore.collection("test").document("register_test")
-                                    .set(mapOf(
-                                        "test" to "connection", 
-                                        "timestamp" to System.currentTimeMillis(),
-                                        "email" to email,
-                                        "name" to name
-                                    ))
-                                    .addOnSuccessListener {
-                                        Log.d("RegisterScreen", "Firebase connection and write test successful")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("RegisterScreen", "Firebase connection or write test failed: ${e.message}")
-                                    }
-                            } catch (e: Exception) {
-                                Log.e("RegisterScreen", "Firebase test error: ${e.message}", e)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE91E63)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Test Firebase Connection & Write", fontSize = 14.sp)
-                    }
-                    
-                    // Manual Test User Creation Button
-                    OutlinedButton(
-                        onClick = { 
-                            Log.d("RegisterScreen", "Creating test user document manually...")
-                            try {
-                                val firestore = FirebaseFirestore.getInstance()
-                                val testUser = mapOf(
-                                    "id" to 12345,
-                                    "email" to "test@example.com",
-                                    "password" to "",
-                                    "name" to "Test User",
-                                    "phone" to ""
-                                )
-                                
-                                firestore.collection("users").document("test_user_manual")
-                                    .set(testUser)
-                                    .addOnSuccessListener {
-                                        Log.d("RegisterScreen", "Manual test user document created successfully")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("RegisterScreen", "Manual test user creation failed: ${e.message}")
-                                    }
-                            } catch (e: Exception) {
-                                Log.e("RegisterScreen", "Manual test user creation error: ${e.message}", e)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF9C27B0)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Create Test User Document", fontSize = 14.sp)
-                    }
-                    
-                    // Test Registration Process Button
-                    OutlinedButton(
-                        onClick = { 
-                            Log.d("RegisterScreen", "Testing registration process...")
-                            if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                                Log.d("RegisterScreen", "Starting test registration with: name=$name, email=$email")
-                                viewModel.register(name, email, password, phone)
-                            } else {
-                                Log.d("RegisterScreen", "Cannot test registration - missing required fields")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF4CAF50)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Test Registration Process", fontSize = 14.sp)
-                    }
-                    
                     // Register Button
                     Button(
                         onClick = { 
@@ -433,7 +344,7 @@ fun RegisterScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         enabled = name.isNotEmpty() && email.isNotEmpty() && 
                                 password.isNotEmpty() && confirmPassword.isNotEmpty() && 
                                 password == confirmPassword && authState !is AuthState.Loading,
@@ -457,12 +368,12 @@ fun RegisterScreen(
                     if (authState is AuthState.Error) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = (authState as AuthState.Error).message,
-                                color = Color(0xFFD32F2F),
+                                                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = (authState as AuthState.Error).message,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
                                 fontSize = 14.sp,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(12.dp)
@@ -473,12 +384,12 @@ fun RegisterScreen(
                     if (password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text(
                                 text = "Passwords do not match",
-                                color = Color(0xFFD32F2F),
+                                color = MaterialTheme.colorScheme.onErrorContainer,
                                 fontSize = 14.sp,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(12.dp)
@@ -508,11 +419,11 @@ fun RegisterScreen(
                     )
                     TextButton(
                         onClick = { navController.navigate("login") },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE91E63))
-                    ) {
-                        Text(
-                            text = "Sign In",
-                            color = Color(0xFFE91E63),
+                                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Text(
+                                    text = "Sign In",
+                                    color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -529,6 +440,7 @@ fun RegisterScreen(
 private fun FloatingParticles() {
     val particles = remember { List(20) { Random.nextFloat() } }
     val animation = rememberInfiniteTransition()
+    val colorScheme = MaterialTheme.colorScheme
     
     val alpha by animation.animateFloat(
         initialValue = 0.1f,
@@ -556,7 +468,7 @@ private fun FloatingParticles() {
             
             rotate(degrees = rotation) {
                 drawCircle(
-                    color = Color(0xFFE91E63).copy(alpha = alpha),
+                    color = colorScheme.primary.copy(alpha = alpha),
                     radius = radius,
                     center = Offset(x, y)
                 )

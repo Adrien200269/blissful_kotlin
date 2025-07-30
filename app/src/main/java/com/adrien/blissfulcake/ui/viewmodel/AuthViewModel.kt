@@ -43,12 +43,7 @@ class AuthViewModel(
                 }
                 _authState.value = AuthState.Error(errorMessage)
             } catch (e: Exception) {
-                val errorMessage = when {
-                    e.message?.contains("Network error", ignoreCase = true) == true -> e.message!!
-                    e.message?.contains("Unable to connect", ignoreCase = true) == true -> "Network error: Please check your internet connection and try again"
-                    else -> "Login failed: ${e.message}"
-                }
-                _authState.value = AuthState.Error(errorMessage)
+                _authState.value = AuthState.Error("Login failed: ${e.message}")
             }
         }
     }
@@ -92,13 +87,7 @@ class AuthViewModel(
                 }
                 _authState.value = AuthState.Error(errorMessage)
             } catch (e: Exception) {
-                val errorMessage = when {
-                    e.message?.contains("Network error", ignoreCase = true) == true -> e.message!!
-                    e.message?.contains("Unable to connect", ignoreCase = true) == true -> "Network error: Please check your internet connection and try again"
-                    e.message?.contains("Failed to save user data", ignoreCase = true) == true -> "Network error: Failed to save user data. Please try again."
-                    else -> e.message ?: "Registration failed. Please try again."
-                }
-                _authState.value = AuthState.Error(errorMessage)
+                _authState.value = AuthState.Error(e.message ?: "Registration failed")
             }
         }
     }

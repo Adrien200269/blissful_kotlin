@@ -16,20 +16,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Light Theme Colors
+// Consistent Light Theme Colors - Pink/Purple Theme
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFE91E63),
+    primary = Color(0xFFE91E63), // Pink
     onPrimary = Color.White,
     primaryContainer = Color(0xFFFCE4EC),
     onPrimaryContainer = Color(0xFFE91E63),
-    secondary = Color(0xFF9C27B0),
+    secondary = Color(0xFF9C27B0), // Purple
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFF3E5F5),
     onSecondaryContainer = Color(0xFF9C27B0),
-    tertiary = Color(0xFFFF5722),
+    tertiary = Color(0xFFE91E63), // Same as primary for consistency
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFEBEE),
-    onTertiaryContainer = Color(0xFFFF5722),
+    tertiaryContainer = Color(0xFFFCE4EC),
+    onTertiaryContainer = Color(0xFFE91E63),
     background = Color(0xFFFFF8F8),
     onBackground = Color(0xFF424242),
     surface = Color.White,
@@ -40,20 +40,20 @@ private val LightColorScheme = lightColorScheme(
     outlineVariant = Color(0xFFCCCCCC)
 )
 
-// Dark Theme Colors
+// Consistent Dark Theme Colors - Pink/Purple Theme
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFFF4081),
+    primary = Color(0xFFFF4081), // Light Pink
     onPrimary = Color.Black,
     primaryContainer = Color(0xFF2D1B2E),
     onPrimaryContainer = Color(0xFFFF4081),
-    secondary = Color(0xFFCE93D8),
+    secondary = Color(0xFFCE93D8), // Light Purple
     onSecondary = Color.Black,
     secondaryContainer = Color(0xFF2D1B2E),
     onSecondaryContainer = Color(0xFFCE93D8),
-    tertiary = Color(0xFFFF8A80),
+    tertiary = Color(0xFFFF4081), // Same as primary for consistency
     onTertiary = Color.Black,
     tertiaryContainer = Color(0xFF2D1B2E),
-    onTertiaryContainer = Color(0xFFFF8A80),
+    onTertiaryContainer = Color(0xFFFF4081),
     background = Color(0xFF121212),
     onBackground = Color.White,
     surface = Color(0xFF1E1E1E),
@@ -68,7 +68,7 @@ private val DarkColorScheme = darkColorScheme(
 fun BlissfulCakesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // Disabled to maintain consistent branding
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -93,7 +93,7 @@ fun CheckoutScreen(
                     Text(
                         text = "Checkout",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
                 navigationIcon = {
@@ -101,7 +101,7 @@ fun CheckoutScreen(
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFFE91E63)
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -114,14 +114,14 @@ fun CheckoutScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFFFE5E5),
-                            Color(0xFFFFF0F0)
+                                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
                         )
-                    )
-                )
         ) {
             Column(
                 modifier = Modifier
@@ -145,7 +145,7 @@ fun CheckoutScreen(
                             text = "Order Summary",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE91E63)
+                            color = MaterialTheme.colorScheme.primary
                         )
                         
                         Spacer(modifier = Modifier.height(12.dp))
@@ -183,7 +183,7 @@ fun CheckoutScreen(
                                 text = "NPR $checkoutTotal",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE91E63)
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }

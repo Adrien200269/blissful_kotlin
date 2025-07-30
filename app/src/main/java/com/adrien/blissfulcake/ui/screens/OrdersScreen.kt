@@ -52,7 +52,7 @@ fun OrdersScreen(
                     Text(
                         text = "My Orders",
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
                 navigationIcon = {
@@ -60,7 +60,7 @@ fun OrdersScreen(
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFFE91E63)
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -76,8 +76,8 @@ fun OrdersScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFFFFE5E5),
-                            Color(0xFFFFF0F0)
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.surface
                         )
                     )
                 )
@@ -96,7 +96,7 @@ fun OrdersScreen(
                         Icons.Default.List,
                         contentDescription = null,
                         modifier = Modifier.size(80.dp),
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -121,7 +121,7 @@ fun OrdersScreen(
                     
                     Button(
                         onClick = { navController.navigate("home") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text("Start Shopping")
                     }
@@ -201,13 +201,13 @@ fun OrderCard(order: Order) {
                     Text(
                         text = "Total:",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "NPR ${order.totalAmount}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -218,7 +218,7 @@ fun OrderCard(order: Order) {
             Text(
                 text = "Address:",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = order.customerAddress,
@@ -232,7 +232,7 @@ fun OrderCard(order: Order) {
             Text(
                 text = "Phone:",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = order.customerPhone,
@@ -245,7 +245,7 @@ fun OrderCard(order: Order) {
                 Text(
                     text = "Notes:",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = order.customerNotes,
@@ -261,7 +261,7 @@ fun OrderCard(order: Order) {
             Text(
                 text = "Ordered: ${dateFormat.format(order.orderDate)}",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -270,12 +270,12 @@ fun OrderCard(order: Order) {
 @Composable
 fun StatusChip(status: OrderStatus) {
     val (backgroundColor, textColor, text) = when (status) {
-        OrderStatus.PENDING -> Triple(Color(0xFFFFA000), Color.White, "Pending")
-        OrderStatus.CONFIRMED -> Triple(Color(0xFF1976D2), Color.White, "Confirmed")
-        OrderStatus.PREPARING -> Triple(Color(0xFF7B1FA2), Color.White, "Preparing")
-        OrderStatus.READY -> Triple(Color(0xFF388E3C), Color.White, "Ready")
-        OrderStatus.DELIVERED -> Triple(Color(0xFF2E7D32), Color.White, "Delivered")
-        OrderStatus.CANCELLED -> Triple(Color(0xFFD32F2F), Color.White, "Cancelled")
+        OrderStatus.PENDING -> Triple(MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.onTertiary, "Pending")
+        OrderStatus.CONFIRMED -> Triple(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary, "Confirmed")
+        OrderStatus.PREPARING -> Triple(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary, "Preparing")
+        OrderStatus.READY -> Triple(MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, "Ready")
+        OrderStatus.DELIVERED -> Triple(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, "Delivered")
+        OrderStatus.CANCELLED -> Triple(MaterialTheme.colorScheme.error, MaterialTheme.colorScheme.onError, "Cancelled")
     }
     
     Surface(

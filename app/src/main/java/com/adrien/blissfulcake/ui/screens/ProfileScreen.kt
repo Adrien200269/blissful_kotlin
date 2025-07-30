@@ -551,7 +551,7 @@ fun ProfileScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color(0xFFFF5722)
+                                                            contentColor = MaterialTheme.colorScheme.tertiary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {

@@ -1,9 +1,10 @@
 package com.adrien.blissfulcake.data.model
 
 data class User(
-    val id: Int = 0,
-    val email: String,
-    val password: String,
+    val id: String,
     val name: String,
-    val phone: String = ""
+    val email: String,
+    val phone: String = "",
+    val photoUrl: String = "",
+    val createdAt: Long = System.currentTimeMillis()
 ) 

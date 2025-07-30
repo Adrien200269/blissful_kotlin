@@ -23,7 +23,7 @@ class CartViewModel(
     private val _itemCount = MutableStateFlow(0)
     val itemCount: StateFlow<Int> = _itemCount.asStateFlow()
     
-    fun loadCartItems(userId: Int) {
+    fun loadCartItems(userId: String) {
         viewModelScope.launch {
             // TODO: Implement getCartItemsWithCakes and CartItemWithCake if needed, or remove/comment out their usages.
             _cartItems.value = emptyList() // Placeholder
@@ -33,7 +33,7 @@ class CartViewModel(
     }
     
     // TODO: Implement addToCart if needed.
-    fun addToCart(userId: Int, cakeId: Int, quantity: Int = 1) {
+    fun addToCart(userId: String, cakeId: Int, quantity: Int = 1) {
         viewModelScope.launch {
             // cartRepository.addToCart(userId, cakeId, quantity)
         }
@@ -54,7 +54,7 @@ class CartViewModel(
     }
     
     // TODO: Implement clearCart if needed.
-    fun clearCart(userId: Int) {
+    fun clearCart(userId: String) {
         viewModelScope.launch {
             // cartRepository.clearCart(userId)
         }

@@ -58,7 +58,7 @@ fun CheckoutScreen(
                 cartItem = com.adrien.blissfulcake.data.model.CartItem(
                     cakeId = cake.id,
                     quantity = 1,
-                    userId = currentUser?.id ?: 0
+                    userId = currentUser?.id ?: ""
                 ),
                 cake = cake
             ))

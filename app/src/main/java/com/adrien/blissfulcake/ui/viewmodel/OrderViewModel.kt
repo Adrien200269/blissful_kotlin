@@ -21,7 +21,7 @@ class OrderViewModel(
     private val _orderState = MutableStateFlow<OrderState>(OrderState.Initial)
     val orderState: StateFlow<OrderState> = _orderState.asStateFlow()
     
-    fun loadOrders(userId: Int) {
+    fun loadOrders(userId: String) {
         viewModelScope.launch {
             orderRepository.getOrdersByUserId(userId).collect { orders ->
                 _orders.value = orders
@@ -31,7 +31,7 @@ class OrderViewModel(
     
     // TODO: Fix or implement createOrder logic. Commenting out unresolved references for now.
     fun createOrder(
-        userId: Int,
+        userId: String,
         customerName: String,
         customerAddress: String,
         customerPhone: String,

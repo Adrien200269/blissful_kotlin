@@ -32,9 +32,23 @@ class AuthViewModel(
                     _authState.value = AuthState.Error("Login failed: User not found in database after authentication. If you registered before, please register again.")
                 }
             } catch (e: com.google.firebase.auth.FirebaseAuthException) {
-                _authState.value = AuthState.Error("FirebaseAuth error: ${e.message}")
+                val errorMessage = when (e.errorCode) {
+                    "ERROR_INVALID_EMAIL" -> "Please enter a valid email address"
+                    "ERROR_WRONG_PASSWORD" -> "Incorrect password"
+                    "ERROR_USER_NOT_FOUND" -> "No account found with this email address"
+                    "ERROR_USER_DISABLED" -> "This account has been disabled"
+                    "ERROR_TOO_MANY_REQUESTS" -> "Too many attempts. Try again later"
+                    "ERROR_NETWORK_REQUEST_FAILED" -> "Network error: Please check your internet connection and try again"
+                    else -> "Login failed: ${e.message}"
+                }
+                _authState.value = AuthState.Error(errorMessage)
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Login failed: ${e.message}")
+                val errorMessage = when {
+                    e.message?.contains("Network error", ignoreCase = true) == true -> e.message!!
+                    e.message?.contains("Unable to connect", ignoreCase = true) == true -> "Network error: Please check your internet connection and try again"
+                    else -> "Login failed: ${e.message}"
+                }
+                _authState.value = AuthState.Error(errorMessage)
             }
         }
     }
@@ -57,15 +71,13 @@ class AuthViewModel(
                     return@launch
                 }
                 
-                val user = User(
+                val userId = userRepository.register(name.trim(), email.trim().lowercase(), password)
+                val newUser = User(
+                    id = userId,
                     name = name.trim(),
                     email = email.trim().lowercase(),
-                    password = password,
                     phone = phone.trim()
                 )
-                
-                val userId = userRepository.register(user)
-                val newUser = user.copy(id = userId.toInt(), password = "")
                 _currentUser.value = newUser
                 _authState.value = AuthState.Success(newUser)
             } catch (e: FirebaseAuthException) {
@@ -75,11 +87,18 @@ class AuthViewModel(
                     "ERROR_EMAIL_ALREADY_IN_USE" -> "An account with this email already exists"
                     "ERROR_OPERATION_NOT_ALLOWED" -> "Email/password sign up is not enabled"
                     "ERROR_TOO_MANY_REQUESTS" -> "Too many attempts. Try again later"
+                    "ERROR_NETWORK_REQUEST_FAILED" -> "Network error: Please check your internet connection and try again"
                     else -> "Registration failed: ${e.message}"
                 }
                 _authState.value = AuthState.Error(errorMessage)
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Registration failed")
+                val errorMessage = when {
+                    e.message?.contains("Network error", ignoreCase = true) == true -> e.message!!
+                    e.message?.contains("Unable to connect", ignoreCase = true) == true -> "Network error: Please check your internet connection and try again"
+                    e.message?.contains("Failed to save user data", ignoreCase = true) == true -> "Network error: Failed to save user data. Please try again."
+                    else -> e.message ?: "Registration failed. Please try again."
+                }
+                _authState.value = AuthState.Error(errorMessage)
             }
         }
     }

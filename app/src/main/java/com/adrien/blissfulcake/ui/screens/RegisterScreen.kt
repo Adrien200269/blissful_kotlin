@@ -138,7 +138,7 @@ fun RegisterScreen(
             Text(
                 text = "Create your account",
                 fontSize = 18.sp,
-                color = Color(0xFF9C27B0),
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium
             )
@@ -151,7 +151,7 @@ fun RegisterScreen(
                     .fillMaxWidth()
                     .shadow(16.dp, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
                     modifier = Modifier.padding(32.dp),
@@ -161,14 +161,14 @@ fun RegisterScreen(
                         text = "Sign Up",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63),
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center
                     )
                     
                     Text(
                         text = "Join us for the sweetest experience",
                         fontSize = 14.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                     
@@ -183,7 +183,7 @@ fun RegisterScreen(
                             Icon(
                                 Icons.Default.Person, 
                                 contentDescription = null,
-                                tint = Color(0xFFE91E63)
+                                tint = MaterialTheme.colorScheme.primary
                             ) 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -192,9 +192,11 @@ fun RegisterScreen(
                             imeAction = ImeAction.Next
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -208,7 +210,7 @@ fun RegisterScreen(
                             Icon(
                                 Icons.Default.Email, 
                                 contentDescription = null,
-                                tint = Color(0xFFE91E63)
+                                tint = MaterialTheme.colorScheme.primary
                             ) 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -217,9 +219,11 @@ fun RegisterScreen(
                             imeAction = ImeAction.Next
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -233,7 +237,7 @@ fun RegisterScreen(
                             Icon(
                                 Icons.Default.Phone, 
                                 contentDescription = null,
-                                tint = Color(0xFFE91E63)
+                                tint = MaterialTheme.colorScheme.primary
                             ) 
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -242,9 +246,11 @@ fun RegisterScreen(
                             imeAction = ImeAction.Next
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -258,7 +264,7 @@ fun RegisterScreen(
                             Icon(
                                 Icons.Default.Lock, 
                                 contentDescription = null,
-                                tint = Color(0xFFE91E63)
+                                tint = MaterialTheme.colorScheme.primary
                             ) 
                         },
                         trailingIcon = {
@@ -266,7 +272,7 @@ fun RegisterScreen(
                                 Icon(
                                     if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = null,
-                                    tint = Color(0xFFE91E63)
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         },
@@ -277,9 +283,11 @@ fun RegisterScreen(
                             imeAction = ImeAction.Next
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -293,7 +301,7 @@ fun RegisterScreen(
                             Icon(
                                 Icons.Default.Lock, 
                                 contentDescription = null,
-                                tint = Color(0xFFE91E63)
+                                tint = MaterialTheme.colorScheme.primary
                             ) 
                         },
                         trailingIcon = {
@@ -301,7 +309,7 @@ fun RegisterScreen(
                                 Icon(
                                     if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                     contentDescription = null,
-                                    tint = Color(0xFFE91E63)
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         },
@@ -312,9 +320,11 @@ fun RegisterScreen(
                             imeAction = ImeAction.Done
                         ),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE91E63),
-                            focusedLabelColor = Color(0xFFE91E63),
-                            unfocusedBorderColor = Color(0xFFE0E0E0)
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -388,6 +398,24 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Create Test User Document", fontSize = 14.sp)
+                    }
+                    
+                    // Test Registration Process Button
+                    OutlinedButton(
+                        onClick = { 
+                            Log.d("RegisterScreen", "Testing registration process...")
+                            if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                                Log.d("RegisterScreen", "Starting test registration with: name=$name, email=$email")
+                                viewModel.register(name, email, password, phone)
+                            } else {
+                                Log.d("RegisterScreen", "Cannot test registration - missing required fields")
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF4CAF50)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Test Registration Process", fontSize = 14.sp)
                     }
                     
                     // Register Button

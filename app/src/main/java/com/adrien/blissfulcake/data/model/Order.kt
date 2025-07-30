@@ -4,7 +4,7 @@ import java.util.Date
 
 data class Order(
     val id: Int = 0,
-    val userId: Int,
+    val userId: String,
     val customerName: String,
     val customerAddress: String,
     val customerPhone: String,

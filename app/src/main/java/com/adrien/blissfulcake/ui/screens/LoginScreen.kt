@@ -135,7 +135,7 @@ fun LoginScreen(
                     Text(
                         text = "Sweet moments, delivered to you",
                         fontSize = 18.sp,
-                        color = Color(0xFF9C27B0),
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Medium
                     )
@@ -148,7 +148,7 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .shadow(16.dp, RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
                             modifier = Modifier.padding(32.dp),
@@ -158,14 +158,14 @@ fun LoginScreen(
                                 text = "Welcome Back",
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE91E63),
+                                color = MaterialTheme.colorScheme.primary,
                                 textAlign = TextAlign.Center
                             )
 
                             Text(
                                 text = "Sign in to continue your sweet journey",
                                 fontSize = 14.sp,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
                             )
 
@@ -180,7 +180,7 @@ fun LoginScreen(
                                     Icon(
                                         Icons.Default.Email,
                                         contentDescription = null,
-                                        tint = Color(0xFFE91E63)
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -189,9 +189,11 @@ fun LoginScreen(
                                     imeAction = ImeAction.Next
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFFE91E63),
-                                    focusedLabelColor = Color(0xFFE91E63),
-                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             )
@@ -205,7 +207,7 @@ fun LoginScreen(
                                     Icon(
                                         Icons.Default.Lock,
                                         contentDescription = null,
-                                        tint = Color(0xFFE91E63)
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
                                 },
                                 trailingIcon = {
@@ -213,7 +215,7 @@ fun LoginScreen(
                                         Icon(
                                             if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                             contentDescription = null,
-                                            tint = Color(0xFFE91E63)
+                                            tint = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                 },
@@ -224,9 +226,11 @@ fun LoginScreen(
                                     imeAction = ImeAction.Done
                                 ),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFFE91E63),
-                                    focusedLabelColor = Color(0xFFE91E63),
-                                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             )
@@ -238,7 +242,7 @@ fun LoginScreen(
                             ) {
                                 Text(
                                     text = "Forgot Password?",
-                                    color = Color(0xFFE91E63),
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }

@@ -1,67 +1,87 @@
 package com.adrien.blissfulcake.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.adrien.blissfulcake.ui.screens.*
-import com.adrien.blissfulcake.ui.screens.SplashScreen
+import com.adrien.blissfulcake.ui.theme.BlissfulCakesTheme
+import com.adrien.blissfulcake.ui.theme.LocalThemeManager
 
 @Composable
 fun NavGraph() {
     val navController = rememberNavController()
+    val themeManager = LocalThemeManager.current
     
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
+        startDestination = "splash"
     ) {
-        composable(Screen.Splash.route) {
-            SplashScreen(navController = navController)
-        }
-        composable(Screen.Login.route) {
-            LoginScreen(navController = navController)
-        }
-        
-        composable(Screen.Register.route) {
-            RegisterScreen(navController = navController)
+        composable("splash") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                SplashScreen(navController)
+            }
         }
         
-        composable(Screen.ForgotPassword.route) {
-            ForgotPasswordScreen(navController = navController)
+        composable("login") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                LoginScreen(navController)
+            }
         }
         
-        composable(Screen.Home.route) {
-            HomeScreen(navController = navController)
+        composable("register") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                RegisterScreen(navController)
+            }
         }
         
-        composable(Screen.Cart.route) {
-            CartScreen(navController = navController)
+        composable("forgot_password") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                ForgotPasswordScreen(navController)
+            }
         }
         
-        // Update: Accept cakeId as an argument (nullable)
-        composable("checkout?cakeId={cakeId}") { backStackEntry ->
-            val cakeId = backStackEntry.arguments?.getString("cakeId")?.toIntOrNull()
-            CheckoutScreen(navController = navController, cakeId = cakeId)
+        composable("home") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                HomeScreen(navController)
+            }
         }
         
-        composable(Screen.Orders.route) {
-            OrdersScreen(navController = navController)
+        composable("cart") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                CartScreen(navController)
+            }
         }
         
-        composable(Screen.Profile.route) {
-            ProfileScreen(navController = navController)
+        composable("checkout") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                CheckoutScreen(navController)
+            }
+        }
+        
+        composable("orders") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                OrdersScreen(navController)
+            }
+        }
+        
+        composable("profile") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                ProfileScreen(navController)
+            }
+        }
+        
+        composable("settings") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                SettingsScreen(navController)
+            }
+        }
+        
+        composable("about") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                AboutScreen(navController)
+            }
         }
     }
-}
-
-sealed class Screen(val route: String) {
-    object Splash : Screen("splash")
-    object Login : Screen("login")
-    object Register : Screen("register")
-    object ForgotPassword : Screen("forgot_password")
-    object Home : Screen("home")
-    object Cart : Screen("cart")
-    object Checkout : Screen("checkout?cakeId={cakeId}")
-    object Orders : Screen("orders")
-    object Profile : Screen("profile")
 } 

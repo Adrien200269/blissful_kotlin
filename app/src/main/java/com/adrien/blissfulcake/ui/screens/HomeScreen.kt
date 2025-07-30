@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -27,11 +28,17 @@ import com.adrien.blissfulcake.ui.viewmodel.AuthViewModel
 import com.adrien.blissfulcake.ui.viewmodel.CakeViewModel
 import com.adrien.blissfulcake.ui.viewmodel.CartViewModel
 import androidx.compose.animation.core.*
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.adrien.blissfulcake.R
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +54,15 @@ fun HomeScreen(
     val selectedCategory by cakeViewModel.selectedCategory.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
     val cartItemCount by cartViewModel.itemCount.collectAsState()
+    val isLoading by cakeViewModel.isLoading.collectAsState()
+    
+    // Debug logging for cakes
+    LaunchedEffect(cakes) {
+        println("HomeScreen: Received ${cakes.size} cakes")
+        cakes.forEach { cake ->
+            println("HomeScreen: Cake - ${cake.name} (ID: ${cake.id})")
+        }
+    }
     
     var showSnackbar by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
@@ -88,30 +104,43 @@ fun HomeScreen(
                         modifier = Modifier
                             .height(44.dp)
                             .scale(logoAnim.value)
+                            .shadow(8.dp, RoundedCornerShape(12.dp))
                     )
                 },
                 actions = {
                     Box {
                         IconButton(
                             onClick = { navController.navigate("cart") },
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .shadow(4.dp, RoundedCornerShape(12.dp))
+                                .background(
+                                    Brush.radialGradient(
+                                        colors = listOf(
+                                            Color(0xFFE91E63),
+                                            Color(0xFFC2185B)
+                                        )
+                                    ),
+                                    RoundedCornerShape(12.dp)
+                                )
                         ) {
                             Icon(
                                 Icons.Default.ShoppingCart,
                                 contentDescription = "Cart",
-                                tint = Color(0xFFE91E63),
-                                modifier = Modifier.size(28.dp)
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                         if (cartItemCount > 0) {
                             Badge(
-                                containerColor = Color(0xFFE91E63),
+                                containerColor = Color(0xFFFF5722),
                                 modifier = Modifier.align(Alignment.TopEnd)
                             ) {
                                 Text(
                                     text = cartItemCount.toString(),
                                     color = Color.White,
-                                    fontSize = 12.sp
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -125,25 +154,44 @@ fun HomeScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
-                contentColor = Color(0xFFE91E63)
+                contentColor = Color(0xFFE91E63),
+                modifier = Modifier.shadow(8.dp)
             ) {
                 NavigationBarItem(
                     selected = true,
                     onClick = { },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") }
+                    icon = { 
+                        Icon(
+                            Icons.Default.Home, 
+                            contentDescription = "Home",
+                            modifier = Modifier.scale(1.2f)
+                        ) 
+                    },
+                    label = { Text("Home", fontWeight = FontWeight.Bold) }
                 )
                 NavigationBarItem(
                     selected = false,
                     onClick = { navController.navigate("orders") },
-                    icon = { Icon(Icons.Default.List, contentDescription = "Orders") },
-                    label = { Text("Orders") }
+                    icon = { 
+                        Icon(
+                            Icons.Default.List, 
+                            contentDescription = "Orders",
+                            modifier = Modifier.scale(1.2f)
+                        ) 
+                    },
+                    label = { Text("Orders", fontWeight = FontWeight.Bold) }
                 )
                 NavigationBarItem(
                     selected = false,
                     onClick = { navController.navigate("profile") },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile") }
+                    icon = { 
+                        Icon(
+                            Icons.Default.Person, 
+                            contentDescription = "Profile",
+                            modifier = Modifier.scale(1.2f)
+                        ) 
+                    },
+                    label = { Text("Profile", fontWeight = FontWeight.Bold) }
                 )
             }
         }
@@ -154,12 +202,15 @@ fun HomeScreen(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFFFFE5E5),
-                            Color(0xFFFFF0F0)
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.surfaceVariant
                         )
                     )
                 )
         ) {
+            // Animated background particles
+            FloatingParticles()
+            
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -170,48 +221,93 @@ fun HomeScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                     
-                    // Welcome Text
-                    Text(
-                        text = "Welcome to Blissful Cakes",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE91E63)
+                    // Welcome Text with Animation
+                    val welcomeAnim = rememberInfiniteTransition().animateFloat(
+                        initialValue = 0.8f,
+                        targetValue = 1.1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(2000, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
                     )
                     
-                    Text(
-                        text = "Discover our delicious cakes",
-                        fontSize = 16.sp,
-                        color = Color.Gray
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(12.dp, RoundedCornerShape(20.dp))
+                            .scale(welcomeAnim.value),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                                                Text(
+                        text = "Welcome to Blissful Cakes",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Text(
+                                text = "Discover our delicious cakes",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 
                 item {
-                    // Categories
+                    // Categories with enhanced styling
                     Text(
                         text = "Categories",
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color(0xFF424242)
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        val categories = listOf("All", "Chocolate", "Vanilla", "Fruit", "Wedding", "Birthday")
+                        val categories = listOf("All", "Chocolate", "Vanilla", "Fruit", "Specialty", "Coffee")
                         
                         items(categories) { category ->
+                            val isSelected = selectedCategory == category
+                            val scaleAnim = rememberInfiniteTransition().animateFloat(
+                                initialValue = if (isSelected) 1.05f else 1f,
+                                targetValue = if (isSelected) 1.1f else 1f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(1000, easing = FastOutSlowInEasing),
+                                    repeatMode = RepeatMode.Reverse
+                                )
+                            )
+                            
                             FilterChip(
-                                selected = selectedCategory == category,
+                                selected = isSelected,
                                 onClick = { cakeViewModel.selectCategory(category) },
-                                label = { Text(category) },
+                                label = { 
+                                    Text(
+                                        category, 
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                    ) 
+                                },
+                                modifier = Modifier.scale(scaleAnim.value),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = Color(0xFFE91E63),
-                                    selectedLabelColor = Color.White
-                                )
+                                    selectedLabelColor = Color.White,
+                                    containerColor = Color.White.copy(alpha = 0.8f)
+                                ),
+                                shape = RoundedCornerShape(20.dp)
                             )
                         }
                     }
@@ -222,30 +318,156 @@ fun HomeScreen(
                 item {
                     Text(
                         text = "Our Cakes",
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color(0xFF424242)
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
                 
-                items(cakes) { cake ->
-                    CakeCard(
-                        cake = cake,
-                        onAddToCart = {
-                            currentUser?.let { user ->
-                                cartViewModel.addToCart(user.id, cake.id)
-                                snackbarMessage = "Added to cart!"
-                                showSnackbar = true
+                if (isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                } else if (cakes.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.Cake,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "No cakes available",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Check back later for delicious cakes!",
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = { cakeViewModel.addTestCakes() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text("Add Test Cakes")
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                OutlinedButton(
+                                    onClick = { cakeViewModel.testFirestoreConnection() },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text("Test Firestore Connection")
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                OutlinedButton(
+                                    onClick = { cakeViewModel.listAllCakesInFirestore() },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text("List All Cakes in Firestore")
+                                }
                             }
                         }
-                    )
+                    }
+                } else {
+                    items(cakes) { cake ->
+                        val index = cakes.indexOf(cake)
+                        // Animation for cake cards
+                        val cardAnim = rememberInfiniteTransition().animateFloat(
+                            initialValue = 0.95f,
+                            targetValue = 1.02f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(2000, easing = FastOutSlowInEasing),
+                                repeatMode = RepeatMode.Reverse
+                            )
+                        )
+                        
+                        CakeCard(
+                            cake = cake,
+                            onAddToCart = {
+                                currentUser?.let { user ->
+                                    cartViewModel.addToCart(user.id, cake.id)
+                                    snackbarMessage = "Added to cart!"
+                                    showSnackbar = true
+                                }
+                            }
+                        )
+                    }
                 }
                 
                 item {
                     Spacer(modifier = Modifier.height(100.dp))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FloatingParticles() {
+    val particles = remember { List(15) { Random.nextFloat() } }
+    val animation = rememberInfiniteTransition()
+    
+    val alpha by animation.animateFloat(
+        initialValue = 0.1f,
+        targetValue = 0.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    
+    val rotation by animation.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(4000),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+    
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        particles.forEachIndexed { index, _ ->
+            val x = size.width * Random.nextFloat()
+            val y = size.height * Random.nextFloat()
+            val radius = 3f + Random.nextFloat() * 4f
+            
+            rotate(degrees = rotation) {
+                drawCircle(
+                    color = Color(0xFFE91E63).copy(alpha = alpha),
+                    radius = radius,
+                    center = Offset(x, y)
+                )
             }
         }
     }
@@ -257,50 +479,78 @@ fun CakeCard(
     cake: Cake,
     onAddToCart: () -> Unit
 ) {
+    val scaleAnim = rememberInfiniteTransition().animateFloat(
+        initialValue = 1f,
+        targetValue = 1.02f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
-        shape = RoundedCornerShape(16.dp),
+            .height(220.dp)
+            .shadow(16.dp, RoundedCornerShape(20.dp))
+            .scale(scaleAnim.value),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Cake Image
+            // Cake Image with gradient background
             Box(
                 modifier = Modifier
-                    .width(150.dp)
+                    .width(160.dp)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
-                    .background(Color(0xFFF5F5F5))
+                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFFCE4EC),
+                                Color(0xFFF8BBD9)
+                            )
+                        )
+                    )
             ) {
-                // Placeholder for cake image
+                // Animated cake icon
+                val iconAnim = rememberInfiniteTransition().animateFloat(
+                    initialValue = 0.8f,
+                    targetValue = 1.2f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1500, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )
+                
                 Icon(
                     Icons.Default.Cake,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(60.dp)
-                        .align(Alignment.Center),
+                        .size(70.dp)
+                        .align(Alignment.Center)
+                        .scale(iconAnim.value),
                     tint = Color(0xFFE91E63)
                 )
             }
             
             // Cake Details
             Column(
-                modifier = Modifier.weight(1f).padding(16.dp),
+                modifier = Modifier.weight(1f).padding(20.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
                         text = cake.name,
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color(0xFF424242)
                     )
                     
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
                         text = cake.description,
@@ -310,23 +560,46 @@ fun CakeCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     
                     Text(
                         text = "NPR ${cake.price}",
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFE91E63)
                     )
                 }
                 
+                // Add to Cart Button with animation
+                val buttonAnim = rememberInfiniteTransition().animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.05f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )
+                
                 Button(
                     onClick = onAddToCart,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .scale(buttonAnim.value),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE91E63)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.AddShoppingCart, contentDescription = "Add to Cart")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Add to Cart")
+                    Text(
+                        "Add to Cart",
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

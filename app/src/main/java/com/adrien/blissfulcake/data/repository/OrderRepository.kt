@@ -13,7 +13,7 @@ class OrderRepository {
     private val ordersCollection = db.collection("orders")
     private val orderItemsCollection = db.collection("order_items")
 
-    fun getOrdersByUserId(userId: Int): Flow<List<Order>> = callbackFlow {
+    fun getOrdersByUserId(userId: String): Flow<List<Order>> = callbackFlow {
         val listener = ordersCollection.whereEqualTo("userId", userId)
             .orderBy("orderDate", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, _ ->

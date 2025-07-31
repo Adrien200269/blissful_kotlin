@@ -25,6 +25,7 @@ class UserRepository {
             Log.d(TAG, "Attempting login for email: $cleanEmail")
             
             val result = auth.signInWithEmailAndPassword(cleanEmail, password).await()
+            Log.d("check",result.user.toString())
             val firebaseUser = result.user
             if (firebaseUser != null) {
                 Log.d(TAG, "Login successful for user: ${firebaseUser.uid}")

@@ -1,5 +1,6 @@
 package com.adrien.blissfulcake.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adrien.blissfulcake.data.model.User
@@ -25,6 +26,7 @@ class AuthViewModel(
             _authState.value = AuthState.Loading
             try {
                 val user = userRepository.login(email, password)
+                Log.d("check",user?.id.toString())
                 if (user != null) {
                     _currentUser.value = user
                     _authState.value = AuthState.Success(user)

@@ -1,5 +1,6 @@
 package com.adrien.blissfulcake.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
+import coil.compose.AsyncImage
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +62,7 @@ fun HomeScreen(
     LaunchedEffect(cakes) {
         println("HomeScreen: Received ${cakes.size} cakes")
         cakes.forEach { cake ->
+            Log.d("checkpoint", "HomeScreen: Cake - ${cake.name} (ID: ${cake.id}, Category: ${cake.category})")
             println("HomeScreen: Cake - ${cake.name} (ID: ${cake.id})")
         }
     }
@@ -373,23 +376,13 @@ fun HomeScreen(
                         }
                     }
                 } else {
-                    items(cakes) { cake ->
-                        val index = cakes.indexOf(cake)
-                        // Animation for cake cards
-                        val cardAnim = rememberInfiniteTransition().animateFloat(
-                            initialValue = 0.95f,
-                            targetValue = 1.02f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(2000, easing = FastOutSlowInEasing),
-                                repeatMode = RepeatMode.Reverse
-                            )
-                        )
-                        
+                    items(cakes.size) { index ->
+
                         CakeCard(
-                            cake = cake,
+                            cake = cakes[index],
                             onAddToCart = {
                                 currentUser?.let { user ->
-                                    cartViewModel.addToCart(user.id, cake.id)
+                                    cartViewModel.addToCart(user.id, cakes[index].id)
                                     snackbarMessage = "Added to cart!"
                                     showSnackbar = true
                                 }
@@ -476,40 +469,45 @@ fun CakeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Cake Image with gradient background
-            Box(
-                modifier = Modifier
-                    .width(160.dp)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
-                    .background(
-                        Brush.radialGradient(
-                                                            colors = listOf(
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                )
-                        )
-                    )
-            ) {
-                // Animated cake icon
-                val iconAnim = rememberInfiniteTransition().animateFloat(
-                    initialValue = 0.8f,
-                    targetValue = 1.2f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1500, easing = FastOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse
-                    )
-                )
-                
-                Icon(
-                    Icons.Default.Cake,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(70.dp)
-                        .align(Alignment.Center)
-                        .scale(iconAnim.value),
-                                                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+
+            AsyncImage(
+                modifier = Modifier.fillMaxHeight().width(160.dp),
+                model = if (cake.imageUrl != null) cake.imageUrl else "https://imgs.search.brave.com/XykIvwYigz7bg8UY0hCn9alZ74Lz9TIE8QR1miq7PZE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA2LzU3LzM3LzAx/LzM2MF9GXzY1NzM3/MDE1MF9wZE5lRzVw/akk5NzZaYXNWYktO/OVZxSDFyZm95a2RZ/VS5qcGc",
+                contentDescription = null)
+//            Box(
+//                modifier = Modifier
+//                    .width(160.dp)
+//                    .fillMaxHeight()
+//                    .clip(RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp))
+//                    .background(
+//                        Brush.radialGradient(
+//                                                            colors = listOf(
+//                                    MaterialTheme.colorScheme.primaryContainer,
+//                                    MaterialTheme.colorScheme.secondaryContainer
+//                                )
+//                        )
+//                    )
+//            ) {
+//                // Animated cake icon
+//                val iconAnim = rememberInfiniteTransition().animateFloat(
+//                    initialValue = 0.8f,
+//                    targetValue = 1.2f,
+//                    animationSpec = infiniteRepeatable(
+//                        animation = tween(1500, easing = FastOutSlowInEasing),
+//                        repeatMode = RepeatMode.Reverse
+//                    )
+//                )
+//
+//                Icon(
+//                    Icons.Default.Cake,
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(70.dp)
+//                        .align(Alignment.Center)
+//                        .scale(iconAnim.value),
+//                                                    tint = MaterialTheme.colorScheme.primary
+//                )
+//            }
             
             // Cake Details
             Column(

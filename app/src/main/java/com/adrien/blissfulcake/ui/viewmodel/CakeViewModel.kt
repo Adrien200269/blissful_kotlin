@@ -64,13 +64,16 @@ class CakeViewModel(
                     cakeRepository.getAllCakes().collect { cakes ->
                         Log.d(TAG, "Received ${cakes.size} cakes for 'All' category")
                         _cakes.value = cakes
+                        _isLoading.value = false
                     }
                 } else {
                     Log.d(TAG, "Loading cakes for category: $category")
                     cakeRepository.getCakesByCategory(category).collect { cakes ->
                         Log.d(TAG, "Received ${cakes.size} cakes for category: $category")
                         _cakes.value = cakes
+                        _isLoading.value = false
                     }
+                    _isLoading.value = false
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading cakes by category: ${e.message}", e)

@@ -29,6 +29,8 @@ import com.adrien.blissfulcake.data.repository.CartItemWithCake
 import com.adrien.blissfulcake.di.DependencyProvider
 import com.adrien.blissfulcake.ui.viewmodel.AuthViewModel
 import com.adrien.blissfulcake.ui.viewmodel.CartViewModel
+import coil.compose.AsyncImage
+import androidx.compose.ui.draw.clip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -291,10 +293,12 @@ fun CartItemCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.blissful_logo),
-                    contentDescription = stringResource(id = R.string.blissful_logo_desc),
-                    modifier = Modifier.size(30.dp)
+                AsyncImage(
+                    model = if (cartItemWithCake.cake.imageUrl != null) cartItemWithCake.cake.imageUrl else "https://imgs.search.brave.com/XykIvwYigz7bg8UY0hCn9alZ74Lz9TIE8QR1miq7PZE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA2LzU3LzM3LzAx/LzM2MF9GXzY1NzM3/MDE1MF9wZE5lRzVw/akk5NzZaYXNWYktO/OVZxSDFyZm95a2RZ/VS5qcGc",
+                    contentDescription = cartItemWithCake.cake.name,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(6.dp))
                 )
             }
             

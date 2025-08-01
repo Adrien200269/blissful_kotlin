@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,9 +48,46 @@ import kotlin.random.Random
 fun HomeScreen(
     navController: NavController
 ) {
+    var hasError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    
+    if (hasError) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Something went wrong",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = errorMessage,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = { 
+                        hasError = false
+                        errorMessage = ""
+                    }
+                ) {
+                    Text("Try Again")
+                }
+            }
+        }
+        return
+    }
     val context = LocalContext.current
     val cakeViewModel = remember { DependencyProvider.provideCakeViewModel(context) }
     val cartViewModel = remember { DependencyProvider.provideCartViewModel(context) }
+    val favoritesViewModel = remember { DependencyProvider.provideFavoritesViewModel(context) }
     val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
     
     val cakes by cakeViewModel.cakes.collectAsState()
@@ -57,13 +95,37 @@ fun HomeScreen(
     val currentUser by authViewModel.currentUser.collectAsState()
     val cartItemCount by cartViewModel.itemCount.collectAsState()
     val isLoading by cakeViewModel.isLoading.collectAsState()
+    val favoriteCakeIds by favoritesViewModel.favoriteCakeIds.collectAsState()
+    
+    // Load current user on app start
+    LaunchedEffect(Unit) {
+        try {
+            authViewModel.loadCurrentUser()
+        } catch (e: Exception) {
+            println("DEBUG: Error loading current user: ${e.message}")
+            hasError = true
+            errorMessage = "Failed to load user data: ${e.message}"
+        }
+    }
+    
+    // Debug: Print current user state
+    LaunchedEffect(currentUser) {
+        println("DEBUG: Current user state changed: $currentUser")
+    }
     
     // Debug logging for cakes
     LaunchedEffect(cakes) {
-        println("HomeScreen: Received ${cakes.size} cakes")
-        cakes.forEach { cake ->
-            Log.d("checkpoint", "HomeScreen: Cake - ${cake.name} (ID: ${cake.id}, Category: ${cake.category})")
-            println("HomeScreen: Cake - ${cake.name} (ID: ${cake.id})")
+        try {
+            println("HomeScreen: Received ${cakes.size} cakes")
+            cakes.forEach { cake ->
+                Log.d("checkpoint", "HomeScreen: Cake - ${cake.name} (ID: ${cake.id}, Category: ${cake.category})")
+                println("HomeScreen: Cake - ${cake.name} (ID: ${cake.id})")
+            }
+        } catch (e: Exception) {
+            println("DEBUG: Error in cakes LaunchedEffect: ${e.message}")
+            hasError = true
+            errorMessage = "Failed to load cakes: ${e.message}"
+            e.printStackTrace()
         }
     }
     
@@ -73,9 +135,27 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     
     LaunchedEffect(currentUser) {
-        currentUser?.let { user ->
-            cartViewModel.loadCartItems(user.id)
+        try {
+            currentUser?.let { user ->
+                println("DEBUG: Current user loaded - ID: ${user.id}, Name: ${user.name}")
+                cartViewModel.loadCartItems(user.id)
+                favoritesViewModel.loadFavorites(user.id)
+            } ?: run {
+                println("DEBUG: No current user found in LaunchedEffect")
+            }
+        } catch (e: Exception) {
+            println("DEBUG: Error in currentUser LaunchedEffect: ${e.message}")
+            e.printStackTrace()
         }
+    }
+    
+    // Debug: Log cart and favorites state changes
+    LaunchedEffect(cartItemCount) {
+        println("DEBUG: Cart item count changed: $cartItemCount")
+    }
+    
+    LaunchedEffect(favoriteCakeIds) {
+        println("DEBUG: Favorite cake IDs changed: ${favoriteCakeIds.size} items")
     }
     
     LaunchedEffect(showSnackbar) {
@@ -171,6 +251,18 @@ fun HomeScreen(
                         ) 
                     },
                     label = { Text("Home", fontWeight = FontWeight.Bold) }
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { navController.navigate("favorites") },
+                    icon = { 
+                        Icon(
+                            Icons.Default.Favorite, 
+                            contentDescription = "Favorites",
+                            modifier = Modifier.scale(1.2f)
+                        ) 
+                    },
+                    label = { Text("Favorites", fontWeight = FontWeight.Bold) }
                 )
                 NavigationBarItem(
                     selected = false,
@@ -353,11 +445,10 @@ fun HomeScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(
-                                    Icons.Default.Cake,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(64.dp),
-                                    tint = MaterialTheme.colorScheme.primary
+                                Image(
+                                    painter = painterResource(id = R.drawable.blissful_logo),
+                                    contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                                    modifier = Modifier.size(64.dp)
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
@@ -382,16 +473,124 @@ fun HomeScreen(
                             cake = cakes[index],
                             onAddToCart = {
                                 currentUser?.let { user ->
+                                    println("DEBUG: Adding to cart - User ID: ${user.id}, Cake ID: ${cakes[index].id}")
                                     cartViewModel.addToCart(user.id, cakes[index].id)
                                     snackbarMessage = "Added to cart!"
                                     showSnackbar = true
+                                } ?: run {
+                                    println("DEBUG: No current user found")
+                                    snackbarMessage = "Please log in to add items to cart"
+                                    showSnackbar = true
                                 }
-                            }
+                            },
+                            onToggleFavorite = {
+                                currentUser?.let { user ->
+                                    println("DEBUG: Toggling favorite - User ID: ${user.id}, Cake ID: ${cakes[index].id}")
+                                    favoritesViewModel.toggleFavorite(user.id, cakes[index].id)
+                                    snackbarMessage = if (favoriteCakeIds.contains(cakes[index].id)) {
+                                        "Removed from favorites!"
+                                    } else {
+                                        "Added to favorites!"
+                                    }
+                                    showSnackbar = true
+                                } ?: run {
+                                    println("DEBUG: No current user found for favorites")
+                                    snackbarMessage = "Please log in to add favorites"
+                                    showSnackbar = true
+                                }
+                            },
+                            isFavorite = favoriteCakeIds.contains(cakes[index].id)
                         )
                     }
                 }
                 
                 item {
+                    // Debug test buttons
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Debug Info:",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "User Status: ${if (currentUser != null) "Logged In" else "Not Logged In"}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "User ID: ${currentUser?.id ?: "None"}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Cart Items: $cartItemCount",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Favorites: ${favoriteCakeIds.size}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    currentUser?.let { user ->
+                                        if (cakes.isNotEmpty()) {
+                                            cartViewModel.addToCart(user.id, cakes[0].id)
+                                            snackbarMessage = "Test: Added first cake to cart"
+                                            showSnackbar = true
+                                        }
+                                    } ?: run {
+                                        snackbarMessage = "No user logged in"
+                                        showSnackbar = true
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Test Cart")
+                            }
+                            
+                            Button(
+                                onClick = {
+                                    currentUser?.let { user ->
+                                        if (cakes.isNotEmpty()) {
+                                            favoritesViewModel.toggleFavorite(user.id, cakes[0].id)
+                                            snackbarMessage = "Test: Toggled first cake favorite"
+                                            showSnackbar = true
+                                        }
+                                    } ?: run {
+                                        snackbarMessage = "No user logged in"
+                                        showSnackbar = true
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Test Favorites")
+                            }
+                        }
+                        
+                        if (currentUser == null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Please log in to use cart and favorites",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                    
                     Spacer(modifier = Modifier.height(100.dp))
                 }
             }
@@ -444,7 +643,9 @@ private fun FloatingParticles() {
 @Composable
 fun CakeCard(
     cake: Cake,
-    onAddToCart: () -> Unit
+    onAddToCart: () -> Unit,
+    onToggleFavorite: () -> Unit,
+    isFavorite: Boolean
 ) {
     val scaleAnim = rememberInfiniteTransition().animateFloat(
         initialValue = 1f,
@@ -515,12 +716,32 @@ fun CakeCard(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(
-                        text = cake.name,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = cake.name,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.weight(1f)
+                        )
+                        
+                        IconButton(
+                            onClick = onToggleFavorite,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                                tint = if (isFavorite) Color(0xFFE91E63) else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     

@@ -54,6 +54,12 @@ fun NavGraph() {
             }
         }
         
+        composable("favorites") {
+            BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
+                FavoritesScreen(navController)
+            }
+        }
+        
         composable("checkout") {
             BlissfulCakesTheme(darkTheme = themeManager.isDarkTheme()) {
                 CheckoutScreen(navController)

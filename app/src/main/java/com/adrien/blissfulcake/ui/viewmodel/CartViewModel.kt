@@ -25,38 +25,69 @@ class CartViewModel(
     
     fun loadCartItems(userId: String) {
         viewModelScope.launch {
-            // TODO: Implement getCartItemsWithCakes and CartItemWithCake if needed, or remove/comment out their usages.
-            _cartItems.value = emptyList() // Placeholder
-            _itemCount.value = 0 // Placeholder
-            _totalAmount.value = 0.0 // Placeholder
+            try {
+                val cartItemsWithCakes = cartRepository.getCartItemsWithCakes(userId)
+                _cartItems.value = cartItemsWithCakes
+                _itemCount.value = cartItemsWithCakes.sumOf { it.cartItem.quantity }
+                _totalAmount.value = cartItemsWithCakes.sumOf { it.cartItem.quantity * it.cake.price }
+            } catch (e: Exception) {
+                // Handle error
+                _cartItems.value = emptyList()
+                _itemCount.value = 0
+                _totalAmount.value = 0.0
+            }
         }
     }
     
-    // TODO: Implement addToCart if needed.
     fun addToCart(userId: String, cakeId: Int, quantity: Int = 1) {
         viewModelScope.launch {
-            // cartRepository.addToCart(userId, cakeId, quantity)
+            try {
+                println("DEBUG: CartViewModel.addToCart called - User ID: $userId, Cake ID: $cakeId")
+                cartRepository.addToCart(userId, cakeId, quantity)
+                // Reload cart items to update UI
+                loadCartItems(userId)
+                println("DEBUG: Cart item added successfully")
+            } catch (e: Exception) {
+                println("DEBUG: Error adding to cart: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
     
-    // TODO: Implement updateCartItemQuantity if needed.
     fun updateQuantity(cartItem: CartItem) {
         viewModelScope.launch {
-            // cartRepository.updateCartItemQuantity(cartItem)
+            try {
+                cartRepository.updateCartItemQuantity(cartItem)
+                // Reload cart items to update UI
+                loadCartItems(cartItem.userId)
+            } catch (e: Exception) {
+                // Handle error
+            }
         }
     }
     
-    // TODO: Implement removeFromCart if needed.
     fun removeFromCart(cartItem: CartItem) {
         viewModelScope.launch {
-            // cartRepository.removeFromCart(cartItem)
+            try {
+                cartRepository.removeFromCart(cartItem)
+                // Reload cart items to update UI
+                loadCartItems(cartItem.userId)
+            } catch (e: Exception) {
+                // Handle error
+            }
         }
     }
     
-    // TODO: Implement clearCart if needed.
     fun clearCart(userId: String) {
         viewModelScope.launch {
-            // cartRepository.clearCart(userId)
+            try {
+                cartRepository.clearCart(userId)
+                _cartItems.value = emptyList()
+                _itemCount.value = 0
+                _totalAmount.value = 0.0
+            } catch (e: Exception) {
+                // Handle error
+            }
         }
     }
 } 

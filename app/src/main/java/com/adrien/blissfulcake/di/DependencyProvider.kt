@@ -20,6 +20,11 @@ object DependencyProvider {
         return CartViewModel(cartRepository)
     }
 
+    fun provideFavoritesViewModel(context: Context): FavoritesViewModel {
+        val favoritesRepository = FavoritesRepository()
+        return FavoritesViewModel(favoritesRepository)
+    }
+
     fun provideOrderViewModel(context: Context): OrderViewModel {
         val orderRepository = OrderRepository()
         return OrderViewModel(orderRepository)

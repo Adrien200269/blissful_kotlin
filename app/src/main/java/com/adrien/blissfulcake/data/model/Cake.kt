@@ -7,5 +7,6 @@ data class Cake(
     val price: Double = 0.0, // Price in Nepali Rupees (NPR)
     val imageUrl: String = "",
     val category: String = "",
-    val isAvailable: Boolean = true
+    val isAvailable: Boolean = true,
+    val isFavorite: Boolean = false
 ) 

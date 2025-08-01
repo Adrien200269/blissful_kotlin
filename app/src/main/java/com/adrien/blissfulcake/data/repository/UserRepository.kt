@@ -210,6 +210,25 @@ class UserRepository {
         Log.d(TAG, "Current Firebase user: ${user?.uid}")
         return user
     }
+    
+    suspend fun getCurrentUserAsUser(): User? {
+        return try {
+            val firebaseUser = auth.currentUser
+            if (firebaseUser != null) {
+                Log.d(TAG, "Getting current user data for UID: ${firebaseUser.uid}")
+                val userDoc = usersCollection.document(firebaseUser.uid).get().await()
+                val user = userDoc.toObject(User::class.java)
+                Log.d(TAG, "Current user data: $user")
+                user
+            } else {
+                Log.d(TAG, "No current Firebase user")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting current user data: ${e.message}", e)
+            null
+        }
+    }
 
     fun isUserLoggedIn(): Boolean {
         val isLoggedIn = auth.currentUser != null

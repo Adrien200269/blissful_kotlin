@@ -71,7 +71,23 @@ class OrderRepository {
     }
 
     suspend fun createOrder(order: com.adrien.blissfulcake.data.model.Order, orderItems: List<com.adrien.blissfulcake.data.model.OrderItem>): Long {
-        // TODO: Implement Firestore order creation logic
-        return 1L
+        try {
+            // Generate a unique order ID using timestamp
+            val orderId = System.currentTimeMillis()
+            val orderWithId = order.copy(id = orderId.toInt())
+            
+            // Save the order
+            insertOrder(orderWithId)
+            
+            // Save order items with the correct order ID
+            val orderItemsWithId = orderItems.map { item ->
+                item.copy(orderId = orderId.toInt())
+            }
+            insertOrderItems(orderItemsWithId)
+            
+            return orderId
+        } catch (e: Exception) {
+            throw e
+        }
     }
 } 

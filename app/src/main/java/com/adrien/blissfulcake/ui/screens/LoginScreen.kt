@@ -284,7 +284,11 @@ fun LoginScreen(
                                         focusedLabelColor = Color(0xFFE91E63),
                                         unfocusedBorderColor = Color(0xFFE0E0E0),
                                         errorBorderColor = Color(0xFFDC3545),
-                                        errorLabelColor = Color(0xFFDC3545)
+                                        errorLabelColor = Color(0xFFDC3545),
+                                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
                                     ),
                                     shape = RoundedCornerShape(12.dp),
                                     isError = emailError != null,
@@ -330,7 +334,11 @@ fun LoginScreen(
                                         focusedLabelColor = Color(0xFFE91E63),
                                         unfocusedBorderColor = Color(0xFFE0E0E0),
                                         errorBorderColor = Color(0xFFDC3545),
-                                        errorLabelColor = Color(0xFFDC3545)
+                                        errorLabelColor = Color(0xFFDC3545),
+                                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
                                     ),
                                     shape = RoundedCornerShape(12.dp),
                                     isError = passwordError != null,

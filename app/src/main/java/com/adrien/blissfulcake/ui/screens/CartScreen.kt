@@ -1,5 +1,6 @@
 package com.adrien.blissfulcake.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,11 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.adrien.blissfulcake.R
 import com.adrien.blissfulcake.data.model.Cake
 import com.adrien.blissfulcake.data.model.CartItem
 import com.adrien.blissfulcake.data.repository.CartItemWithCake
@@ -41,7 +45,18 @@ fun CartScreen(
     
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
+            println("DEBUG: CartScreen - Loading cart items for user: ${user.id}")
             cartViewModel.loadCartItems(user.id)
+        } ?: run {
+            println("DEBUG: CartScreen - No current user found")
+        }
+    }
+    
+    // Debug: Log cart state changes
+    LaunchedEffect(cartItems) {
+        println("DEBUG: CartScreen - Cart items loaded: ${cartItems.size} items")
+        cartItems.forEach { cartItemWithCake ->
+            println("DEBUG: CartScreen - Cart item: ${cartItemWithCake.cake.name} (Qty: ${cartItemWithCake.cartItem.quantity})")
         }
     }
     
@@ -261,11 +276,10 @@ fun CartItemCard(
                     .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    Icons.Default.Cake,
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                Image(
+                    painter = painterResource(id = R.drawable.blissful_logo),
+                    contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                    modifier = Modifier.size(30.dp)
                 )
             }
             

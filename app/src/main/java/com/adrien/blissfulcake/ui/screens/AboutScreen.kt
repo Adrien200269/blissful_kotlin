@@ -306,7 +306,7 @@ fun AboutScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         
                         FeatureItem(
-                            icon = Icons.Default.Cake,
+                            icon = Icons.Default.Star,
                             title = "Custom Cake Orders",
                             description = "Order personalized cakes for any occasion"
                         )

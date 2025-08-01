@@ -78,6 +78,10 @@ fun CheckoutScreen(
     LaunchedEffect(orderState) {
         when (orderState) {
             is OrderState.Success -> {
+                // Clear the cart after successful order
+                currentUser?.let { user ->
+                    cartViewModel.clearCart(user.id)
+                }
                 navController.navigate("orders") {
                     popUpTo("home") { inclusive = true }
                 }

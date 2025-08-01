@@ -19,35 +19,46 @@ class CakeRepository {
 
     fun getAllCakes(): Flow<List<Cake>> = callbackFlow {
         Log.d(TAG, "Starting to fetch all cakes from Firestore")
-        val listener = cakesCollection
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    Log.e(TAG, "Error fetching cakes: ${error.message}")
-                    trySend(emptyList())
-                    return@addSnapshotListener
-                }
-                
-                Log.d(TAG, "Snapshot received. Documents count: ${snapshot?.documents?.size ?: 0}")
-                
-                val cakes = snapshot?.documents?.mapNotNull { doc ->
+        try {
+            val listener = cakesCollection
+                .addSnapshotListener { snapshot, error ->
                     try {
-                        Log.d(TAG, "Processing document: ${doc.id}")
-                        Log.d(TAG, "Document data: ${doc.data}")
-                        val cake = doc.toObject<Cake>()
-                        Log.d(TAG, "Fetched cake: ${cake?.name} (ID: ${cake?.id})")
-                        cake
+                        if (error != null) {
+                            Log.e(TAG, "Error fetching cakes: ${error.message}")
+                            trySend(emptyList())
+                            return@addSnapshotListener
+                        }
+                        
+                        Log.d(TAG, "Snapshot received. Documents count: ${snapshot?.documents?.size ?: 0}")
+                        
+                        val cakes = snapshot?.documents?.mapNotNull { doc ->
+                            try {
+                                Log.d(TAG, "Processing document: ${doc.id}")
+                                Log.d(TAG, "Document data: ${doc.data}")
+                                val cake = doc.toObject<Cake>()
+                                Log.d(TAG, "Fetched cake: ${cake?.name} (ID: ${cake?.id})")
+                                cake
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error parsing cake document: ${e.message}")
+                                null
+                            }
+                        } ?: emptyList()
+                        
+                        Log.d(TAG, "Total cakes fetched: ${cakes.size}")
+                        trySend(cakes)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing cake document: ${e.message}")
-                        null
+                        Log.e(TAG, "Error in snapshot listener: ${e.message}")
+                        trySend(emptyList())
                     }
-                } ?: emptyList()
-                
-                Log.d(TAG, "Total cakes fetched: ${cakes.size}")
-                trySend(cakes)
+                }
+            awaitClose { 
+                Log.d(TAG, "Closing getAllCakes listener")
+                listener.remove() 
             }
-        awaitClose { 
-            Log.d(TAG, "Closing getAllCakes listener")
-            listener.remove() 
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up getAllCakes listener: ${e.message}")
+            trySend(emptyList())
+            awaitClose { }
         }
     }
 

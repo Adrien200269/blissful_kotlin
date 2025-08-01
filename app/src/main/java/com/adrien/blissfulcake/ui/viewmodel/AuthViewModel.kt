@@ -136,6 +136,27 @@ class AuthViewModel(
             }
         }
     }
+    
+    fun loadCurrentUser() {
+        viewModelScope.launch {
+            try {
+                val user = userRepository.getCurrentUserAsUser()
+                if (user != null) {
+                    _currentUser.value = user
+                    _authState.value = AuthState.Success(user)
+                    println("DEBUG: AuthViewModel - Current user loaded: ${user.id}")
+                } else {
+                    _currentUser.value = null
+                    _authState.value = AuthState.Initial
+                    println("DEBUG: AuthViewModel - No current user found")
+                }
+            } catch (e: Exception) {
+                println("DEBUG: AuthViewModel - Error loading current user: ${e.message}")
+                _currentUser.value = null
+                _authState.value = AuthState.Initial
+            }
+        }
+    }
 }
 
 sealed class AuthState {

@@ -38,10 +38,15 @@ class CakeViewModel(
             _isLoading.value = true
             try {
                 cakeRepository.getAllCakes().collect { cakes ->
-                    Log.d(TAG, "Received ${cakes.size} cakes from repository")
-                    _cakes.value = cakes
-                    cakes.forEach { cake ->
-                        Log.d(TAG, "Cake: ${cake.name} (ID: ${cake.id}, Category: ${cake.category})")
+                    try {
+                        Log.d(TAG, "Received ${cakes.size} cakes from repository")
+                        _cakes.value = cakes
+                        cakes.forEach { cake ->
+                            Log.d(TAG, "Cake: ${cake.name} (ID: ${cake.id}, Category: ${cake.category})")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error processing cakes: ${e.message}", e)
+                        _cakes.value = emptyList()
                     }
                 }
             } catch (e: Exception) {

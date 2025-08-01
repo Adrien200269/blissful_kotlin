@@ -29,7 +29,6 @@ class OrderViewModel(
         }
     }
     
-    // TODO: Fix or implement createOrder logic. Commenting out unresolved references for now.
     fun createOrder(
         userId: String,
         customerName: String,
@@ -52,7 +51,7 @@ class OrderViewModel(
                 )
                 val orderItems = cartItems.map { cartItemWithCake ->
                     OrderItem(
-                        orderId = 0,
+                        orderId = 0, // Will be set by repository
                         cakeId = cartItemWithCake.cake.id,
                         quantity = cartItemWithCake.cartItem.quantity,
                         price = cartItemWithCake.cake.price

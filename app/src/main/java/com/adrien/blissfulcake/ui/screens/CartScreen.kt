@@ -140,6 +140,21 @@ fun CartScreen(
                     ) {
                         Text("Start Shopping")
                     }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Debug button for diagnostics
+                    currentUser?.let { user ->
+                        Button(
+                            onClick = { 
+                                println("DEBUG: CartScreen - Triggering cart diagnostics for user: ${user.id}")
+                                cartViewModel.diagnoseCart(user.id)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C27B0))
+                        ) {
+                            Text("Debug Cart (Check Logs)")
+                        }
+                    }
                 }
             } else {
                 // Cart Items
@@ -277,8 +292,8 @@ fun CartItemCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.blissful_logo),
-                    contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                                    painter = painterResource(id = R.drawable.blissful_logo),
+                contentDescription = stringResource(id = R.string.blissful_logo_desc),
                     modifier = Modifier.size(30.dp)
                 )
             }

@@ -199,6 +199,33 @@ fun FavoritesScreen(
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                                
+                                Spacer(modifier = Modifier.height(16.dp))
+                                
+                                // Debug button for diagnostics
+                                currentUser?.let { user ->
+                                    Button(
+                                        onClick = { 
+                                            println("DEBUG: FavoritesScreen - Triggering favorites diagnostics for user: ${user.id}")
+                                            favoritesViewModel.diagnoseFavorites(user.id)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C27B0))
+                                    ) {
+                                        Text("Debug Favorites (Check Logs)")
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    
+                                    Button(
+                                        onClick = { 
+                                            println("DEBUG: FavoritesScreen - Triggering cleanup for user: ${user.id}")
+                                            favoritesViewModel.cleanupDuplicateFavorites(user.id)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722))
+                                    ) {
+                                        Text("Cleanup Duplicates")
+                                    }
+                                }
                             }
                         }
                     }

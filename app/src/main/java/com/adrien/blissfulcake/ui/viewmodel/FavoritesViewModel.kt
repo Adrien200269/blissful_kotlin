@@ -23,10 +23,16 @@ class FavoritesViewModel(
     fun loadFavorites(userId: String) {
         viewModelScope.launch {
             try {
+                println("DEBUG: FavoritesViewModel.loadFavorites - User ID: $userId")
                 val favoritesWithCakes = favoritesRepository.getFavoritesWithCakes(userId)
+                println("DEBUG: FavoritesViewModel - Loaded ${favoritesWithCakes.size} favorites with cakes")
                 _favorites.value = favoritesWithCakes
-                _favoriteCakeIds.value = favoritesWithCakes.map { it.cakeId }.toSet()
+                val cakeIds = favoritesWithCakes.map { it.cakeId }.toSet()
+                _favoriteCakeIds.value = cakeIds
+                println("DEBUG: FavoritesViewModel - Updated favorite cake IDs: $cakeIds")
             } catch (e: Exception) {
+                println("DEBUG: FavoritesViewModel.loadFavorites error: ${e.message}")
+                e.printStackTrace()
                 _favorites.value = emptyList()
                 _favoriteCakeIds.value = emptySet()
             }
@@ -38,18 +44,29 @@ class FavoritesViewModel(
             try {
                 println("DEBUG: FavoritesViewModel.toggleFavorite called - User ID: $userId, Cake ID: $cakeId")
                 val isCurrentlyFavorite = _favoriteCakeIds.value.contains(cakeId)
+                
+                // Update state immediately for better UX
                 if (isCurrentlyFavorite) {
+                    // Remove from favorites
                     favoritesRepository.removeFromFavorites(userId, cakeId)
                     println("DEBUG: Removed from favorites")
+                    // Update local state immediately
+                    _favoriteCakeIds.value = _favoriteCakeIds.value - cakeId
                 } else {
+                    // Add to favorites
                     favoritesRepository.addToFavorites(userId, cakeId)
                     println("DEBUG: Added to favorites")
+                    // Update local state immediately
+                    _favoriteCakeIds.value = _favoriteCakeIds.value + cakeId
                 }
-                // Reload favorites to update UI
+                
+                // Reload favorites to ensure consistency
                 loadFavorites(userId)
             } catch (e: Exception) {
                 println("DEBUG: Error toggling favorite: ${e.message}")
                 e.printStackTrace()
+                // Revert state on error
+                loadFavorites(userId)
             }
         }
     }
@@ -77,5 +94,31 @@ class FavoritesViewModel(
     
     fun isFavorite(cakeId: Int): Boolean {
         return _favoriteCakeIds.value.contains(cakeId)
+    }
+    
+    fun diagnoseFavorites(userId: String) {
+        viewModelScope.launch {
+            try {
+                println("DEBUG: FavoritesViewModel.diagnoseFavorites called for user: $userId")
+                favoritesRepository.diagnoseFavorites(userId)
+            } catch (e: Exception) {
+                println("DEBUG: Error in diagnoseFavorites: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+    
+    fun cleanupDuplicateFavorites(userId: String) {
+        viewModelScope.launch {
+            try {
+                println("DEBUG: FavoritesViewModel.cleanupDuplicateFavorites called for user: $userId")
+                favoritesRepository.cleanupDuplicateFavorites(userId)
+                // Reload favorites after cleanup
+                loadFavorites(userId)
+            } catch (e: Exception) {
+                println("DEBUG: Error in cleanupDuplicateFavorites: ${e.message}")
+                e.printStackTrace()
+            }
+        }
     }
 } 

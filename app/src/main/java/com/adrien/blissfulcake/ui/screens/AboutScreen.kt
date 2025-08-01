@@ -140,8 +140,8 @@ fun AboutScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.blissful_logo),
-                            contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                                            painter = painterResource(id = R.drawable.blissful_logo),
+                contentDescription = stringResource(id = R.string.blissful_logo_desc),
                             modifier = Modifier.size(80.dp)
                         )
                     }

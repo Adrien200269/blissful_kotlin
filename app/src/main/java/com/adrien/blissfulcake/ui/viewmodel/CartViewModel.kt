@@ -26,11 +26,16 @@ class CartViewModel(
     fun loadCartItems(userId: String) {
         viewModelScope.launch {
             try {
+                println("DEBUG: CartViewModel.loadCartItems - User ID: $userId")
                 val cartItemsWithCakes = cartRepository.getCartItemsWithCakes(userId)
+                println("DEBUG: CartViewModel.loadCartItems - Loaded ${cartItemsWithCakes.size} cart items with cakes")
                 _cartItems.value = cartItemsWithCakes
                 _itemCount.value = cartItemsWithCakes.sumOf { it.cartItem.quantity }
                 _totalAmount.value = cartItemsWithCakes.sumOf { it.cartItem.quantity * it.cake.price }
+                println("DEBUG: CartViewModel.loadCartItems - Updated item count: ${_itemCount.value}, total amount: ${_totalAmount.value}")
             } catch (e: Exception) {
+                println("DEBUG: CartViewModel.loadCartItems error: ${e.message}")
+                e.printStackTrace()
                 // Handle error
                 _cartItems.value = emptyList()
                 _itemCount.value = 0
@@ -87,6 +92,18 @@ class CartViewModel(
                 _totalAmount.value = 0.0
             } catch (e: Exception) {
                 // Handle error
+            }
+        }
+    }
+    
+    fun diagnoseCart(userId: String) {
+        viewModelScope.launch {
+            try {
+                println("DEBUG: CartViewModel.diagnoseCart called for user: $userId")
+                cartRepository.diagnoseCartItems(userId)
+            } catch (e: Exception) {
+                println("DEBUG: Error in diagnoseCart: ${e.message}")
+                e.printStackTrace()
             }
         }
     }

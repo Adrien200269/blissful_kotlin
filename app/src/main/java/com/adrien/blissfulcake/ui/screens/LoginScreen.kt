@@ -208,8 +208,8 @@ fun LoginScreen(
                         )
 
                         Image(
-                            painter = painterResource(id = R.drawable.blissful_logo),
-                            contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                                            painter = painterResource(id = R.drawable.blissful_logo),
+                contentDescription = stringResource(id = R.string.blissful_logo_desc),
                             modifier = Modifier
                                 .height(140.dp)
                                 .scale(scaleAnim.value)

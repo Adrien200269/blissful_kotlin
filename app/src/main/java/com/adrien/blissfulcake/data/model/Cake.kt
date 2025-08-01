@@ -7,6 +7,6 @@ data class Cake(
     val price: Double = 0.0, // Price in Nepali Rupees (NPR)
     val imageUrl: String = "",
     val category: String = "",
-    val isAvailable: Boolean = true,
+    val available: Boolean = true, // Firestore field name
     val isFavorite: Boolean = false
 ) 

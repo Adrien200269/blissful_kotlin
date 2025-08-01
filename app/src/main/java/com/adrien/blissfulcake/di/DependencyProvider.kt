@@ -11,7 +11,7 @@ object DependencyProvider {
     }
 
     fun provideCakeViewModel(context: Context): CakeViewModel {
-        val cakeRepository = CakeRepository()
+        val cakeRepository = CakeRepository.getInstance()
         return CakeViewModel(cakeRepository)
     }
 

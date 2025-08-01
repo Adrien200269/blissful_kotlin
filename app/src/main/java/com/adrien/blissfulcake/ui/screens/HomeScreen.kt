@@ -485,9 +485,11 @@ fun HomeScreen(
                             },
                             onToggleFavorite = {
                                 currentUser?.let { user ->
-                                    println("DEBUG: Toggling favorite - User ID: ${user.id}, Cake ID: ${cakes[index].id}")
-                                    favoritesViewModel.toggleFavorite(user.id, cakes[index].id)
-                                    snackbarMessage = if (favoriteCakeIds.contains(cakes[index].id)) {
+                                    val cakeId = cakes[index].id
+                                    val isCurrentlyFavorite = favoriteCakeIds.contains(cakeId)
+                                    println("DEBUG: Toggling favorite - User ID: ${user.id}, Cake ID: $cakeId, Currently Favorite: $isCurrentlyFavorite")
+                                    favoritesViewModel.toggleFavorite(user.id, cakeId)
+                                    snackbarMessage = if (isCurrentlyFavorite) {
                                         "Removed from favorites!"
                                     } else {
                                         "Added to favorites!"

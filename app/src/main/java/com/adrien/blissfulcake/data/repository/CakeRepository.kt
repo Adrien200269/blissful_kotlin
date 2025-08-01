@@ -15,6 +15,14 @@ class CakeRepository {
     
     companion object {
         private const val TAG = "CakeRepository"
+        @Volatile
+        private var INSTANCE: CakeRepository? = null
+        
+        fun getInstance(): CakeRepository {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: CakeRepository().also { INSTANCE = it }
+            }
+        }
     }
 
     fun getAllCakes(): Flow<List<Cake>> = callbackFlow {
@@ -35,8 +43,10 @@ class CakeRepository {
                             try {
                                 Log.d(TAG, "Processing document: ${doc.id}")
                                 Log.d(TAG, "Document data: ${doc.data}")
+                                Log.d(TAG, "Document data types - id: ${doc.data?.get("id")?.javaClass}, name: ${doc.data?.get("name")?.javaClass}")
+                                
                                 val cake = doc.toObject<Cake>()
-                                Log.d(TAG, "Fetched cake: ${cake?.name} (ID: ${cake?.id})")
+                                Log.d(TAG, "Fetched cake: ${cake?.name} (ID: ${cake?.id}, type: ${cake?.id?.javaClass})")
                                 cake
                             } catch (e: Exception) {
                                 Log.e(TAG, "Error parsing cake document: ${e.message}")
@@ -59,6 +69,30 @@ class CakeRepository {
             Log.e(TAG, "Error setting up getAllCakes listener: ${e.message}")
             trySend(emptyList())
             awaitClose { }
+        }
+    }
+    
+    // Add a simple function to get cakes without Flow for matching
+    suspend fun getAllCakesDirect(): List<Cake> {
+        return try {
+            Log.d(TAG, "Getting cakes directly (no Flow)")
+            val snapshot = cakesCollection.get().await()
+            val cakes = snapshot.documents.mapNotNull { doc ->
+                try {
+                    Log.d(TAG, "Processing document directly: ${doc.id}")
+                    val cake = doc.toObject<Cake>()
+                    Log.d(TAG, "Direct fetched cake: ${cake?.name} (ID: ${cake?.id})")
+                    cake
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error parsing cake document directly: ${e.message}")
+                    null
+                }
+            }
+            Log.d(TAG, "Total cakes fetched directly: ${cakes.size}")
+            cakes
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting cakes directly: ${e.message}")
+            emptyList()
         }
     }
 

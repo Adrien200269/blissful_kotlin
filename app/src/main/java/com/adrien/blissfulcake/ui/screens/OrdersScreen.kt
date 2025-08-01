@@ -205,7 +205,7 @@ fun OrderCard(order: Order) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -218,7 +218,8 @@ fun OrderCard(order: Order) {
                 Text(
                     text = "Order #${order.id}",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 StatusChip(status = order.status)
@@ -235,12 +236,13 @@ fun OrderCard(order: Order) {
                     Text(
                         text = "Customer:",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = order.customerName,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 
@@ -270,7 +272,8 @@ fun OrderCard(order: Order) {
             Text(
                 text = order.customerAddress,
                 fontSize = 14.sp,
-                maxLines = 2
+                maxLines = 2,
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -283,7 +286,8 @@ fun OrderCard(order: Order) {
             )
             Text(
                 text = order.customerPhone,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             if (order.customerNotes.isNotEmpty()) {
@@ -297,7 +301,7 @@ fun OrderCard(order: Order) {
                 Text(
                     text = order.customerNotes,
                     fontSize = 14.sp,
-                    maxLines = 2
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             

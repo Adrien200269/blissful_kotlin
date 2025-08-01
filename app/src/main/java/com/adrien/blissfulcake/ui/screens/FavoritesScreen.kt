@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import com.adrien.blissfulcake.R
 import androidx.compose.ui.draw.scale
 import coil.compose.AsyncImage
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -350,7 +351,7 @@ fun FavoriteCakeCard(
             .shadow(16.dp, RoundedCornerShape(20.dp))
             .scale(scaleAnim.value),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -378,7 +379,7 @@ fun FavoriteCakeCard(
                             text = cake.name,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.weight(1f)
                         )
@@ -401,7 +402,7 @@ fun FavoriteCakeCard(
                     Text(
                         text = cake.description,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

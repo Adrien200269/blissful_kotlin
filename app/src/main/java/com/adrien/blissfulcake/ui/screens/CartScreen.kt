@@ -276,7 +276,7 @@ fun CartItemCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -288,12 +288,12 @@ fun CartItemCard(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                                    painter = painterResource(id = R.drawable.blissful_logo),
-                contentDescription = stringResource(id = R.string.blissful_logo_desc),
+                    painter = painterResource(id = R.drawable.blissful_logo),
+                    contentDescription = stringResource(id = R.string.blissful_logo_desc),
                     modifier = Modifier.size(30.dp)
                 )
             }
@@ -307,13 +307,14 @@ fun CartItemCard(
                 Text(
                     text = cartItemWithCake.cake.name,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Text(
                     text = "NPR ${cartItemWithCake.cake.price}",
                     fontSize = 14.sp,
-                    color = Color(0xFFE91E63),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium
                 )
             }

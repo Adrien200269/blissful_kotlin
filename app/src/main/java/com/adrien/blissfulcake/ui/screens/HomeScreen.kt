@@ -42,6 +42,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import coil.compose.AsyncImage
 import kotlin.random.Random
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -665,7 +666,7 @@ fun CakeCard(
             .shadow(16.dp, RoundedCornerShape(20.dp))
             .scale(scaleAnim.value),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -727,7 +728,7 @@ fun CakeCard(
                             text = cake.name,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = if (isSystemInDarkTheme()) Color.White else MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.weight(1f)
                         )
@@ -750,7 +751,7 @@ fun CakeCard(
                     Text(
                         text = cake.description,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

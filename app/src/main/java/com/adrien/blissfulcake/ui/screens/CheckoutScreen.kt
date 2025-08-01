@@ -140,7 +140,7 @@ fun CheckoutScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp)
@@ -161,12 +161,14 @@ fun CheckoutScreen(
                             ) {
                                 Text(
                                     text = "${cartItemWithCake.cake.name} x${cartItemWithCake.cartItem.quantity}",
-                                    fontSize = 14.sp
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "NPR ${cartItemWithCake.cartItem.quantity * cartItemWithCake.cake.price}",
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -181,7 +183,8 @@ fun CheckoutScreen(
                             Text(
                                 text = "Total:",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "NPR $checkoutTotal",
@@ -199,7 +202,7 @@ fun CheckoutScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -209,7 +212,7 @@ fun CheckoutScreen(
                             text = "Delivery Information",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE91E63)
+                            color = MaterialTheme.colorScheme.primary
                         )
                         
                         // Customer Name
@@ -224,8 +227,12 @@ fun CheckoutScreen(
                                 imeAction = ImeAction.Next
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE91E63),
-                                focusedLabelColor = Color(0xFFE91E63)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary
                             )
                         )
                         
@@ -241,8 +248,12 @@ fun CheckoutScreen(
                                 imeAction = ImeAction.Next
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE91E63),
-                                focusedLabelColor = Color(0xFFE91E63)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary
                             )
                         )
                         
@@ -258,8 +269,12 @@ fun CheckoutScreen(
                                 imeAction = ImeAction.Next
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE91E63),
-                                focusedLabelColor = Color(0xFFE91E63)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary
                             )
                         )
                         
@@ -275,8 +290,12 @@ fun CheckoutScreen(
                                 imeAction = ImeAction.Done
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFFE91E63),
-                                focusedLabelColor = Color(0xFFE91E63)
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textColor = MaterialTheme.colorScheme.onSurface,
+                                cursorColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
@@ -301,13 +320,13 @@ fun CheckoutScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     enabled = customerName.isNotEmpty() && customerAddress.isNotEmpty() && 
                             customerPhone.isNotEmpty() && orderState !is OrderState.Loading
                 ) {
                     if (orderState is OrderState.Loading) {
                         CircularProgressIndicator(
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     } else {
@@ -319,7 +338,7 @@ fun CheckoutScreen(
                 if (orderState is OrderState.Error) {
                     Text(
                         text = (orderState as OrderState.Error).message,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(top = 8.dp)

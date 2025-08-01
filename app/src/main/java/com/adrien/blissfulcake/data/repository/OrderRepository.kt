@@ -14,13 +14,27 @@ class OrderRepository {
     private val orderItemsCollection = db.collection("order_items")
 
     fun getOrdersByUserId(userId: String): Flow<List<Order>> = callbackFlow {
+        println("DEBUG: OrderRepository.getOrdersByUserId - User ID: $userId")
         val listener = ordersCollection.whereEqualTo("userId", userId)
             .orderBy("orderDate", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, _ ->
-                val orders = snapshot?.documents?.mapNotNull { it.toObject(Order::class.java) } ?: emptyList()
-                trySend(orders)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    println("DEBUG: OrderRepository - Error fetching orders: ${error.message}")
+                } else {
+                    val orders = snapshot?.documents?.mapNotNull { doc ->
+                        println("DEBUG: OrderRepository - Processing order document: ${doc.id}")
+                        val order = doc.toObject(Order::class.java)
+                        println("DEBUG: OrderRepository - Parsed order: ID ${order?.id}, Status: ${order?.status}")
+                        order
+                    } ?: emptyList()
+                    println("DEBUG: OrderRepository - Found ${orders.size} orders for user $userId")
+                    trySend(orders)
+                }
             }
-        awaitClose { listener.remove() }
+        awaitClose { 
+            println("DEBUG: OrderRepository - Closing listener for user $userId")
+            listener.remove() 
+        }
     }
 
     fun getAllOrders(): Flow<List<Order>> = callbackFlow {

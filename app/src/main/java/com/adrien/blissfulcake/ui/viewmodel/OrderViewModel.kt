@@ -15,6 +15,10 @@ class OrderViewModel(
     private val orderRepository: OrderRepository
 ) : ViewModel() {
     
+    init {
+        println("DEBUG: OrderViewModel - Initialized")
+    }
+    
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
     val orders: StateFlow<List<Order>> = _orders.asStateFlow()
     
@@ -22,9 +26,18 @@ class OrderViewModel(
     val orderState: StateFlow<OrderState> = _orderState.asStateFlow()
     
     fun loadOrders(userId: String) {
+        println("DEBUG: OrderViewModel.loadOrders called with userId: $userId")
         viewModelScope.launch {
-            orderRepository.getOrdersByUserId(userId).collect { orders ->
-                _orders.value = orders
+            try {
+                println("DEBUG: OrderViewModel.loadOrders - User ID: $userId")
+                orderRepository.getOrdersByUserId(userId).collect { orders ->
+                    println("DEBUG: OrderViewModel - Received ${orders.size} orders from repository")
+                    _orders.value = orders
+                    println("DEBUG: OrderViewModel - _orders.value updated to: ${_orders.value.size} items")
+                }
+            } catch (e: Exception) {
+                println("DEBUG: OrderViewModel.loadOrders error: ${e.message}")
+                e.printStackTrace()
             }
         }
     }

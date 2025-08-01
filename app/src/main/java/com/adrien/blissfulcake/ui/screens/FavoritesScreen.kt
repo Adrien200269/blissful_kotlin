@@ -39,10 +39,17 @@ import coil.compose.AsyncImage
 fun FavoritesScreen(
     navController: NavController
 ) {
+    println("DEBUG: FavoritesScreen - Screen created")
+    
     val context = LocalContext.current
-    val favoritesViewModel = remember { DependencyProvider.provideFavoritesViewModel(context) }
+    val favoritesViewModel = remember { 
+        println("DEBUG: FavoritesScreen - Creating FavoritesViewModel")
+        DependencyProvider.provideFavoritesViewModel(context) 
+    }
     val cartViewModel = remember { DependencyProvider.provideCartViewModel(context) }
     val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
+    
+    println("DEBUG: FavoritesScreen - ViewModels created")
     
     val favorites by favoritesViewModel.favorites.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
@@ -50,8 +57,19 @@ fun FavoritesScreen(
     
     var showSnackbar by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
+    var favoritesLoaded by remember { mutableStateOf(false) }
     
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    println("DEBUG: FavoritesScreen - State variables initialized")
+    
+    // Debug: Log favorites state in UI
+    LaunchedEffect(favorites) {
+        println("DEBUG: FavoritesScreen UI - Favorites state changed: ${favorites.size} items")
+        favorites.forEachIndexed { index, favorite ->
+            println("DEBUG: FavoritesScreen UI - Favorite $index: ${favorite.cake?.name} (ID: ${favorite.cakeId})")
+        }
+    }
     
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
@@ -67,6 +85,30 @@ fun FavoritesScreen(
         println("DEBUG: FavoritesScreen - Favorites loaded: ${favorites.size} items")
         favorites.forEach { favorite ->
             println("DEBUG: FavoritesScreen - Favorite: ${favorite.cake?.name} (ID: ${favorite.cakeId})")
+        }
+    }
+    
+    // Debug: Log user state changes
+    LaunchedEffect(currentUser) {
+        println("DEBUG: FavoritesScreen - User state changed: ${currentUser?.id ?: "null"}")
+    }
+    
+    // Debug: Log when favorites state changes
+    LaunchedEffect(favorites.size) {
+        println("DEBUG: FavoritesScreen - Favorites size changed to: ${favorites.size}")
+    }
+    
+    // Force reload favorites when user becomes available
+    LaunchedEffect(currentUser?.id) {
+        currentUser?.let { user ->
+            if (!favoritesLoaded) {
+                println("DEBUG: FavoritesScreen - User ID changed, reloading favorites: ${user.id}")
+                favoritesViewModel.loadFavorites(user.id)
+                favoritesLoaded = true
+            }
+        } ?: run {
+            // Reset when user becomes null
+            favoritesLoaded = false
         }
     }
     
@@ -200,6 +242,15 @@ fun FavoritesScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                // Debug: Show current favorites count
+                                Text(
+                                    text = "DEBUG: Favorites count in UI: ${favorites.size}",
+                                    fontSize = 12.sp,
+                                    color = Color.Red
+                                )
+                                
                                 Spacer(modifier = Modifier.height(16.dp))
                                 
                                 // Debug button for diagnostics
@@ -224,6 +275,20 @@ fun FavoritesScreen(
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5722))
                                     ) {
                                         Text("Cleanup Duplicates")
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    
+                                    Button(
+                                        onClick = { 
+                                            println("DEBUG: FavoritesScreen - Manually reloading favorites for user: ${user.id}")
+                                            favoritesLoaded = false
+                                            favoritesViewModel.loadFavorites(user.id)
+                                            favoritesLoaded = true
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                                    ) {
+                                        Text("Reload Favorites")
                                     }
                                 }
                             }

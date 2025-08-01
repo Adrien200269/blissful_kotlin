@@ -5,28 +5,41 @@ import com.adrien.blissfulcake.data.repository.*
 import com.adrien.blissfulcake.ui.viewmodel.*
 
 object DependencyProvider {
+    private var authViewModel: AuthViewModel? = null
+    private var cakeViewModel: CakeViewModel? = null
+    private var cartViewModel: CartViewModel? = null
+    private var favoritesViewModel: FavoritesViewModel? = null
+    private var orderViewModel: OrderViewModel? = null
+
     fun provideAuthViewModel(context: Context): AuthViewModel {
-        val userRepository = UserRepository()
-        return AuthViewModel(userRepository)
+        return authViewModel ?: AuthViewModel(UserRepository()).also { authViewModel = it }
     }
 
     fun provideCakeViewModel(context: Context): CakeViewModel {
-        val cakeRepository = CakeRepository.getInstance()
-        return CakeViewModel(cakeRepository)
+        return cakeViewModel ?: CakeViewModel(CakeRepository.getInstance()).also { cakeViewModel = it }
     }
 
     fun provideCartViewModel(context: Context): CartViewModel {
-        val cartRepository = CartRepository()
-        return CartViewModel(cartRepository)
+        return cartViewModel ?: CartViewModel(CartRepository()).also { cartViewModel = it }
     }
 
     fun provideFavoritesViewModel(context: Context): FavoritesViewModel {
-        val favoritesRepository = FavoritesRepository()
-        return FavoritesViewModel(favoritesRepository)
+        return if (favoritesViewModel != null) {
+            println("DEBUG: DependencyProvider - Reusing existing FavoritesViewModel")
+            favoritesViewModel!!
+        } else {
+            println("DEBUG: DependencyProvider - Creating new FavoritesViewModel")
+            FavoritesViewModel(FavoritesRepository()).also { favoritesViewModel = it }
+        }
     }
 
     fun provideOrderViewModel(context: Context): OrderViewModel {
-        val orderRepository = OrderRepository()
-        return OrderViewModel(orderRepository)
+        return if (orderViewModel != null) {
+            println("DEBUG: DependencyProvider - Reusing existing OrderViewModel")
+            orderViewModel!!
+        } else {
+            println("DEBUG: DependencyProvider - Creating new OrderViewModel")
+            OrderViewModel(OrderRepository()).also { orderViewModel = it }
+        }
     }
 } 

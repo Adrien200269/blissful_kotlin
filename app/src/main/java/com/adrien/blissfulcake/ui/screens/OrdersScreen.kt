@@ -32,15 +32,38 @@ import java.util.*
 fun OrdersScreen(
     navController: NavController
 ) {
+    println("DEBUG: OrdersScreen - Screen created")
+    
     val context = LocalContext.current
-    val orderViewModel = remember { DependencyProvider.provideOrderViewModel(context) }
+    val orderViewModel = remember { 
+        println("DEBUG: OrdersScreen - Creating OrderViewModel")
+        DependencyProvider.provideOrderViewModel(context) 
+    }
     val authViewModel = remember { DependencyProvider.provideAuthViewModel(context) }
+    
+    println("DEBUG: OrdersScreen - ViewModels created")
     
     val orders by orderViewModel.orders.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
     
+    println("DEBUG: OrdersScreen - State variables initialized")
+    
+    // Debug: Log orders state changes
+    LaunchedEffect(orders) {
+        println("DEBUG: OrdersScreen - Orders loaded: ${orders.size} items")
+        orders.forEachIndexed { index, order ->
+            println("DEBUG: OrdersScreen - Order $index: ID ${order.id}, Status: ${order.status}, Amount: ${order.totalAmount}")
+        }
+    }
+    
+    // Debug: Log user state changes
+    LaunchedEffect(currentUser) {
+        println("DEBUG: OrdersScreen - User state changed: ${currentUser?.id ?: "null"}")
+    }
+    
     LaunchedEffect(currentUser) {
         currentUser?.let { user ->
+            println("DEBUG: OrdersScreen - Loading orders for user: ${user.id}")
             orderViewModel.loadOrders(user.id)
         }
     }
@@ -121,9 +144,33 @@ fun OrdersScreen(
                     
                     Button(
                         onClick = { navController.navigate("home") },
-                                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text("Start Shopping")
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Debug button for diagnostics
+                    currentUser?.let { user ->
+                        Button(
+                            onClick = { 
+                                println("DEBUG: OrdersScreen - Manually reloading orders for user: ${user.id}")
+                                orderViewModel.loadOrders(user.id)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                        ) {
+                            Text("Reload Orders")
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Debug: Show current orders count
+                        Text(
+                            text = "DEBUG: Orders count in UI: ${orders.size}",
+                            fontSize = 12.sp,
+                            color = Color.Red
+                        )
                     }
                 }
             } else {

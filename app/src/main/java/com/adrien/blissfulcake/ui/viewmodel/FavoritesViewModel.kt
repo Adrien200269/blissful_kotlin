@@ -14,6 +14,10 @@ class FavoritesViewModel(
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
     
+    init {
+        println("DEBUG: FavoritesViewModel - Initialized")
+    }
+    
     private val _favorites = MutableStateFlow<List<FavoriteItem>>(emptyList())
     val favorites: StateFlow<List<FavoriteItem>> = _favorites.asStateFlow()
     
@@ -21,6 +25,7 @@ class FavoritesViewModel(
     val favoriteCakeIds: StateFlow<Set<Int>> = _favoriteCakeIds.asStateFlow()
     
     fun loadFavorites(userId: String) {
+        println("DEBUG: FavoritesViewModel.loadFavorites called with userId: $userId")
         viewModelScope.launch {
             try {
                 println("DEBUG: FavoritesViewModel.loadFavorites - User ID: $userId")
@@ -30,6 +35,7 @@ class FavoritesViewModel(
                 val cakeIds = favoritesWithCakes.map { it.cakeId }.toSet()
                 _favoriteCakeIds.value = cakeIds
                 println("DEBUG: FavoritesViewModel - Updated favorite cake IDs: $cakeIds")
+                println("DEBUG: FavoritesViewModel - _favorites.value updated to: ${_favorites.value.size} items")
             } catch (e: Exception) {
                 println("DEBUG: FavoritesViewModel.loadFavorites error: ${e.message}")
                 e.printStackTrace()
